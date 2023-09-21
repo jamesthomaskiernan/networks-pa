@@ -2,6 +2,7 @@
 import sys # for system exception
 import zmq # this package must be imported for ZMQ to work
 import time # for sleeping
+import argparse # for argument parsing
 
 # files
 from message import Message # our custom message in native format
@@ -10,10 +11,10 @@ import serialize as sz # this is from the file serialize.py in the same director
 #######################
 # Health Server Class #
 #######################
-class HealthServer ():
+class HealthStatusServer ():
 	
 	# initializer, starts server and begins listening
-	def __init__(self, port = 4444, address = "*"):
+	def __init__(self, port = 4444, intf = "*"):
 		
 		print("Health Server starting...")
 
@@ -43,7 +44,7 @@ class HealthServer ():
 
 		# bind server
 		try:
-			bind_string = "tcp://" + address + ":" + str (port)
+			bind_string = "tcp://" + intf + ":" + str (port)
 			print ("Health Server will be binding on {}".format (bind_string))
 			self.socket.bind (bind_string)
 		except zmq.ZMQError as err:
@@ -96,4 +97,38 @@ class HealthServer ():
 			print ("Some exception occurred with send_serialized {}".format (sys.exc_info()[0]))
 			raise
     
-server = HealthServer(4444, "*")
+########################
+# Command line parsing #
+########################
+def parseCmdLineArgs ():
+	# parse the command line
+	parser = argparse.ArgumentParser ()
+
+	# add optional arguments
+	parser.add_argument ("-i", "--intf", default="*", help="Interface to bind to (default: *)")
+	parser.add_argument ("-p", "--port", type=int, default=4444, help="Port to bind to (default: 4444)")
+	args = parser.parse_args ()
+
+	return args
+    
+
+#------------------------------------------
+# main function
+def main ():
+	""" Main program """
+
+	print("Demo Health Status Server")
+
+	# first parse the command line args
+	parsed_args = parseCmdLineArgs ()
+		
+	# start the server code
+	server = HealthStatusServer(**vars(parsed_args))
+
+#----------------------------------------------
+if __name__ == '__main__':
+	# here we just print the version numbers
+	print("Current libzmq version is %s" % zmq.zmq_version())
+	print("Current pyzmq version is %s" % zmq.pyzmq_version())
+
+	main ()

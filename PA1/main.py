@@ -1,4 +1,4 @@
-from fridge import Fridge # fridge client
+from refrigerator import Fridge # fridge client
 from message import Message # our custom message in native format
 import time # use this to measure time it takes to send messages
 import random

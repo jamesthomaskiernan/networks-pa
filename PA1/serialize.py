@@ -7,7 +7,7 @@ import sys
 # flatbuffers.  If the python package is installed in your system wide files
 # or virtualenv, then this may not be needed
 
-sys.path.append(os.path.join (os.path.dirname(__file__), '/home/user/Apps/flatbuffers/python')) # UPDATE THIS TO YOUR OWN DIRECTORY!
+sys.path.append(os.path.join (os.path.dirname(__file__), '/home/jovianw/Apps/flatbuffers/python')) # UPDATE THIS TO YOUR OWN DIRECTORY!
 import flatbuffers    # this is the flatbuffers package we import
 
 import time   # we need this get current time
