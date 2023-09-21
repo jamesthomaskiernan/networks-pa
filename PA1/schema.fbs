@@ -1,0 +1,11 @@
+// This is the message schema which the fridge will use to communicate with the Grocery and Health Servers, and vice versa
+// run flatc -p schema.fbs to generate corresponding python file, placed in Message directory
+
+namespace MessageNamespace;
+
+table Message {
+  type:int;
+  content:string;
+}
+
+root_type Message;
