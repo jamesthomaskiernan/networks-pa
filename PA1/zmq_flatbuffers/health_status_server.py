@@ -1,7 +1,6 @@
 # built in packages
 import sys # for system exception
 import zmq # this package must be imported for ZMQ to work
-import time # for sleeping
 import argparse # for argument parsing
 
 # files

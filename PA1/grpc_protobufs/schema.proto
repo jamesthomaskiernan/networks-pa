@@ -1,0 +1,135 @@
+// to compile use:
+// python3 -m grpc_tools.protoc --proto_path=./ --python_out=./ --grpc_python_out=./ --pyi_out=./   schema.proto
+
+syntax = "proto3";
+
+// RESPONSE
+
+enum Code {
+    OK = 0;
+    BAD_REQUEST = 1;
+}
+
+message ResponseContents {
+    Code code = 1;
+    string contents = 2;
+}
+
+// ORDER
+
+message Veggies {
+    float tomato = 1;
+    float cucumber = 2;
+    float broccoli = 3;
+    float potato = 4;
+    float carrot = 5;
+}
+
+message Cans {
+    int32 coke = 1;
+    int32 beer = 2;
+    int32 pepsi = 3;
+}
+
+message Bottles {
+    int32 sprite = 1;
+    int32 fanta = 2;
+    int32 dietcoke = 3;
+}
+
+message Drinks {
+    Cans cans = 1;
+    Bottles bottles = 2;
+}
+
+enum MilkType {
+    ONEPERCENT = 0;
+    TWOPERCENT = 1;
+    FATFREE = 2;
+    WHOLE = 3;
+    ALMOND = 4;
+    CASHEW = 5;
+    OAT = 6;
+}
+
+message Milk {
+    MilkType type = 1;
+    float quantity = 2;
+}
+
+enum BreadType {
+    WHOLEWHEAT = 0;
+    WHITE = 1;
+    BUTTERMILK = 2;
+    RYE = 3;
+}
+
+message Bread {
+    BreadType type = 1;
+    int32 quantity = 2;
+}
+
+enum MeatType {
+    CHICKEN = 0;
+    BEEF = 1;
+    PORK = 2;
+    TURKEY = 3;
+}
+
+message Meat {
+    MeatType type = 1;
+    float quantity = 2;
+}
+
+message OrderContents {
+    Veggies veggies = 1;
+    Drinks drinks = 2;
+    repeated Milk milk = 3;
+    repeated Bread bread = 4;
+    repeated Meat meat = 5;
+}
+
+// HEALTH
+
+enum Dispenser {
+    OPTIMAL = 0;
+    PARTIAL = 1;
+    BLOCKAGE = 2;
+}
+
+enum Status {
+    GOOD = 0;
+    BAD = 1;
+}
+
+message HealthContents {
+    Dispenser dispenser = 1;
+    int32 icemaker = 2;
+    Status lightbulb = 3;
+    int32 fridge_temp = 4;
+    int32 freezer_temp = 5;
+    Status sensor_status = 6;
+}
+
+// MESSAGE (our root)
+
+enum MessageType {
+    ORDER = 0;
+    HEALTH = 1;
+    RESPONSE = 2;
+}
+
+message Message
+{
+    MessageType type = 1;
+    oneof contents {
+        HealthContents health_contents = 2;
+        OrderContents order_contents = 3;
+        ResponseContents response_contents = 4;
+    }
+}
+
+service DummyService
+{
+    rpc method (Message) returns (Message) {};
+}

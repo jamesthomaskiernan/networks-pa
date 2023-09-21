@@ -1,13 +1,7 @@
 # The different packages we need in this Python driver code
-import os
 import sys
-import time  # needed for timing measurements and sleep
-
-import random  # random number generator
 import argparse  # argument parser
-
 from concurrent import futures   # needed for thread pool
-import logging
 
 import grpc   # for gRPC
 # import generated packages
@@ -46,7 +40,7 @@ def parseCmdLineArgs ():
   parser = argparse.ArgumentParser ()
 
   # add optional arguments
-  parser.add_argument ("-p", "--port", type=int, default=5577, help="Port where the server part of the peer listens and client side connects to (default: 5577)")
+  parser.add_argument ("-p", "--port", type=int, default=5555, help="Port where the server part of the peer listens and client side connects to (default: 5555)")
   
   # parse the args
   args = parser.parse_args ()

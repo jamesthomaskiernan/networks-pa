@@ -1,13 +1,8 @@
 # built in packages
-import os
 import sys # for system exception
-import time # for sleeping
 import argparse # for argument parsing
-import random # for rng
-
-
 from concurrent import futures # needed for thread pool
-import logging
+
 import grpc
 import schema_pb2 as spb
 import schema_pb2_grpc as spb_grpc
@@ -42,7 +37,7 @@ def parseCmdLineArgs ():
 	parser = argparse.ArgumentParser ()
 
 	# add optional arguments
-	parser.add_argument ("-p", "--port", type=int, default=7788, help="Port to bind to (default: 7788)")
+	parser.add_argument ("-p", "--port", type=int, default=4444, help="Port to bind to (default: 4444)")
 	
 	args = parser.parse_args ()
 

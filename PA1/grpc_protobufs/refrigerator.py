@@ -1,15 +1,9 @@
 # The different packages we need in this Python driver code
-import os
-import sys
 import time  # needed for timing measurements and sleep
-
 import random  # random number generator
 import argparse  # argument parser
 
-import logging
-
 import grpc   # for gRPC
-
 # import generated packages
 import schema_pb2 as spb
 import schema_pb2_grpc as spb_grpc
@@ -23,8 +17,7 @@ def parseCmdLineArgs ():
 
   # add optional arguments
   parser.add_argument ("-i", "--iters", type=int, default=10, help="Number of iterations to run (default: 10)")
-  parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[5577, 7788], help="Ports that client is listening on (default: [5577, 7788])")
-  #parser.add_argument ("-p", "--port", type=int, default=5577, help="Port where the server part of the peer listens and client side connects to (default: 5577)")
+  parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[5555, 4444], help="Ports that client is listening on (default: [5555, 4444])")
 
   # parse the args
   args = parser.parse_args ()
