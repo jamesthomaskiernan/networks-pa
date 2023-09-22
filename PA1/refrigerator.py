@@ -6,7 +6,7 @@ import random # to simulate messages
 import time # use this to measure time it takes to send messages
 
 # files
-from message import Message # our custom message in native format
+import message as cm # our custom message in native format
 import serialize as sz # this is from the file serialize.py in the same directory
 
 ################
@@ -109,7 +109,7 @@ def parseCmdLineArgs ():
 
     # add optional arguments
     parser.add_argument ("-a", "--addr", default="127.0.0.1", help="IP Address to connect to (default: localhost i.e., 127.0.0.1)")
-    parser.add_argument ("-i", "--iters", type=int, default=10, help="Number of iterations (default: 10")
+    parser.add_argument ("-i", "--iters", type=int, default=1, help="Number of iterations (default: 1")
     parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[5555, 4444], help="Ports that client is listening on (default: [5555, 4444])")
     args = parser.parse_args ()
 
@@ -129,8 +129,8 @@ def main ():
     refrigerator = Refrigerator()
 
     # connect refrigerator to both servers
-    refrigerator.connect(refrigerator.grocery_socket, parsed_args.ports[0], parsed_args.addr)
-    print("Refrigerator connected to grocery server.")
+    # refrigerator.connect(refrigerator.grocery_socket, parsed_args.ports[0], parsed_args.addr)
+    # print("Refrigerator connected to grocery server.")
     refrigerator.connect(refrigerator.health_status_socket, parsed_args.ports[1], parsed_args.addr)
     print("Refrigerator connected to health status server.")
 
@@ -144,36 +144,40 @@ def main ():
         # means ~25% of messages will be health messages
         
         # send health message
-        if random.randint(1, 4) == 1:
+        # if random.randint(1, 4) == 1:
             
-            # create message, set some arbitrary content
-            msg = Message()
-            msg.type = 5
-            msg.content = "Hello! This is a message for the health status server!"
-            
-            # time how long it takes
-            start_time = time.time () * 1000 # multiply by 1000 to get ms
-            print("Sending message to health status server.")
-            refrigerator.send_message(refrigerator.health_status_socket, msg)
-            msg = refrigerator.receive_message(refrigerator.health_status_socket)
-            end_time = time.time () * 1000
-            roundtrip_times_zmpq.append(end_time - start_time)
-            
-        # send grocery message
-        else:
+        # create message, set some arbitrary content
 
-            # create message, set some arbitrary content
-            msg = Message()
-            msg.type = 5
-            msg.content = "Hello! This is a message for the grocery server!"
+        ##### TESTING RESPONSE MESSAGE SERIALIZATION
+        msg = cm.Message ()
+        msg.type = cm.MessageType.RESPONSE
+        msg.contents = cm.ResponseContents ()
+        msg.contents.code = cm.Code.OK
+        msg.contents.contents = "You are Healthy"
+        
+        # time how long it takes
+        start_time = time.time () * 1000 # multiply by 1000 to get ms
+        print("Sending message to health status server.")
+        refrigerator.send_message(refrigerator.health_status_socket, msg)
+        msg = refrigerator.receive_message(refrigerator.health_status_socket)
+        end_time = time.time () * 1000
+        roundtrip_times_zmpq.append(end_time - start_time)
             
-            # time how long it takes
-            start_time = time.time () * 1000 # multiply by 1000 to get ms
-            print("Sending message to grocery server.")
-            refrigerator.send_message(refrigerator.grocery_socket, msg)
-            msg = refrigerator.receive_message(refrigerator.grocery_socket)
-            end_time = time.time () * 1000
-            roundtrip_times_zmpq.append(end_time - start_time)
+        # # send grocery message
+        # else:
+
+        #     # create message, set some arbitrary content
+        #     msg = Message()
+        #     msg.type = 0
+        #     msg.content = "Hello! This is a message for the grocery server!"
+            
+        #     # time how long it takes
+        #     start_time = time.time () * 1000 # multiply by 1000 to get ms
+        #     print("Sending message to grocery server.")
+        #     refrigerator.send_message(refrigerator.grocery_socket, msg)
+        #     msg = refrigerator.receive_message(refrigerator.grocery_socket)
+        #     end_time = time.time () * 1000
+        #     roundtrip_times_zmpq.append(end_time - start_time)
 
     avg = sum(roundtrip_times_zmpq) / len(roundtrip_times_zmpq)
     print("Average roundtrip time to both servers with ZMQ: " + str(avg) + "ms")

@@ -5,7 +5,7 @@ import time # for sleeping
 import argparse # for argument parsing
 
 # files
-from message import Message # our custom message in native format
+import message as cm # our custom message in native format
 import serialize as sz # this is from the file serialize.py in the same directory
 
 #######################
@@ -61,24 +61,23 @@ class HealthStatusServer ():
 		
 		while True:
 
-			cm = Message()
-		
 			# receive message from client
-			cm = self.receive_message()
+			msg = self.receive_message()
 			print("Health Server received following message:")
-			cm.dump()
+			print(msg)
+			msg.dump()
 
 			# update message and send it back as a response
-			cm.content = "THIS IS A RESPONSE FROM HEALTH"
-			self.send_message(cm)
+			msg.contents.contents = "THIS IS A RESPONSE FROM HEALTH"
+			self.send_message(msg)
 
 	# receives serialized message from clients
 	def receive_message(self):
 		try:
 			# Note, in the following, if copy=False, then what is received is
 			# a list of frames and not bytes
-			cm = self.socket.recv_serialized (sz.deserialize_from_frames, copy=True)
-			return cm
+			msg = self.socket.recv_serialized (sz.deserialize_from_frames, copy=True)
+			return msg
 		except zmq.ZMQError as err:
 			print ("ZeroMQ Error receiving serialized message: {}".format (err))
 			raise
