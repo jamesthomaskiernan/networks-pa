@@ -36,23 +36,25 @@ def serialize (msg):
     builder = flatbuffers.Builder(0)
 
     # Serialize message contents
-    contents = []
+    contents = None
     if msg.type == cm.MessageType.RESPONSE: # If responsecontents
+      # Serialize strings and vectors
       contents_field = builder.CreateString (msg.contents.contents) # contents is string
       # Serialize response contents
       parcontents.Start (builder)
       parcontents.AddCode (builder, msg.contents.code)
       parcontents.AddContents (builder, contents_field)
-      contents.append (parcontents.End (builder))
+      ser_contents = parcontents.End (builder)
     
     # Serialize message
     pamsg.Start (builder)  # serialization starts with the "Start" method
     pamsg.AddType (builder, msg.type)
-    pamsg.AddContents (builder, contents[0])
-    serialized_msg = pamsg.End (builder)  # get the topic of all these fields
+    pamsg.AddContentsType (builder, pacontents.Contents().ResponseContents)
+    pamsg.AddContents (builder, ser_contents)
+    ser_msg = pamsg.End (builder)  # get the topic of all these fields
 
     # end the serialization process
-    builder.Finish (serialized_msg)
+    builder.Finish (ser_msg)
 
     # get the serialized buffer
     buf = builder.Output ()
@@ -72,23 +74,25 @@ def serialize_to_frames (msg):
 # deserialize the incoming serialized structure into native data type
 def deserialize (buf):
     # Native format
-    msg = cm.Message ()
+    msg = cm.Message()
     
     # Flatbuf formatted message from serialized buffer
-    deser_msg = pamsg.Message.GetRootAs (buf, 0)
+    deser_msg = pamsg.Message.GetRootAs(buf, 0)
 
     # Message type
-    msg.type = deser_msg.Type ()
+    msg.type = deser_msg.Type()
 
-    print("Contents are:", deser_msg.Contents ())
+    # Message contents
+    if deser_msg.Type() == pamsgtype.MessageType.RESPONSE:
+      # Response message contents
+      # Apparently you have to initialize a flatbuffer object from nested tables to get 
+      # the inner attributes
+      deser_rcontents = parcontents.ResponseContents()
+      deser_rcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
 
-    # # Message contents
-    # if deser_msg.Type () == pamsgtype.MessageType.RESPONSE:
-    #    # Response message contents
-    #    deser_msg.Contents
-
-    # # name received
-    # msg.contents = packet.Contents ()
+      msg.contents = cm.ResponseContents()
+      msg.contents.code = deser_rcontents.Code()
+      msg.contents.contents = deser_rcontents.Contents()
 
     return msg
     

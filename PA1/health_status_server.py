@@ -64,7 +64,6 @@ class HealthStatusServer ():
 			# receive message from client
 			msg = self.receive_message()
 			print("Health Server received following message:")
-			print(msg)
 			msg.dump()
 
 			# update message and send it back as a response
