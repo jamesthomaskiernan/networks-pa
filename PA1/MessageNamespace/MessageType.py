@@ -2,7 +2,7 @@
 
 # namespace: MessageNamespace
 
-class Type(object):
+class MessageType(object):
     ORDER = 0
     HEALTH = 1
     RESPONSE = 2

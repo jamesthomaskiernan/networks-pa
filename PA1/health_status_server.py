@@ -6,6 +6,8 @@ import argparse # for argument parsing
 
 # files
 from message import Message # our custom message in native format
+from message import MessageType # enum, 0 1 2
+
 import serialize as sz # this is from the file serialize.py in the same directory
 
 #######################
@@ -69,7 +71,8 @@ class HealthStatusServer ():
 			cm.dump()
 
 			# update message and send it back as a response
-			cm.content = "THIS IS A RESPONSE FROM HEALTH"
+			cm.type = MessageType.RESPONSE
+			cm.contents = "THIS IS A RESPONSE FROM HEALTH"
 			self.send_message(cm)
 
 	# receives serialized message from clients

@@ -28,46 +28,30 @@ class Message(object):
     def Type(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Int8Flags, o + self._tab.Pos)
-        return 0
-
-    # Message
-    def ContentsType(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
     # Message
     def Contents(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
-            from flatbuffers.table import Table
-            obj = Table(bytearray(), 0)
-            self._tab.Union(obj, o)
-            return obj
+            return self._tab.String(o + self._tab.Pos)
         return None
 
 def MessageStart(builder):
-    builder.StartObject(3)
+    builder.StartObject(2)
 
 def Start(builder):
     MessageStart(builder)
 
 def MessageAddType(builder, type):
-    builder.PrependInt8Slot(0, type, 0)
+    builder.PrependInt32Slot(0, type, 0)
 
 def AddType(builder, type):
     MessageAddType(builder, type)
 
-def MessageAddContentsType(builder, contentsType):
-    builder.PrependUint8Slot(1, contentsType, 0)
-
-def AddContentsType(builder, contentsType):
-    MessageAddContentsType(builder, contentsType)
-
 def MessageAddContents(builder, contents):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(contents), 0)
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(contents), 0)
 
 def AddContents(builder, contents):
     MessageAddContents(builder, contents)

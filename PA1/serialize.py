@@ -7,7 +7,7 @@ import sys
 # flatbuffers.  If the python package is installed in your system wide files
 # or virtualenv, then this may not be needed
 
-sys.path.append(os.path.join (os.path.dirname(__file__), '/home/jovianw/Apps/flatbuffers/python')) # UPDATE THIS TO YOUR OWN DIRECTORY!
+sys.path.append(os.path.join (os.path.dirname(__file__), '/home/user/Apps/flatbuffers/python')) # UPDATE THIS TO YOUR OWN DIRECTORY!
 import flatbuffers    # this is the flatbuffers package we import
 
 import time   # we need this get current time
@@ -15,37 +15,34 @@ import numpy as np  # to use in our vector field
 
 import zmq   # we need this for additional constraints provided by the zmq serialization
 
-from message import Message  # our custom message in native format
-import MessageNamespace.Message as msg   # this is the generated code by the flatc compiler
 
-# This is the method we will invoke from our driver program
-# Note that if you have have multiple different message types, we could have
-# separate such serialize/deserialize methods, or a single method can check what
-# type of message it is and accordingly take actions.
-def serialize (cm):
-    # first obtain the builder object that is used to create an in-memory representation
-    # of the serialized object from the custom message
-    builder = flatbuffers.Builder(0);
+from message import MessageType
+from message import Message
+import MessageNamespace.Message as msgCompiled   # this is the generated code by the flatc compiler
 
-    # create the name string for the name field using
-    # the parameter we passed
-    content_field = builder.CreateString (cm.content)
-    
-    # let us create the serialized msg by adding contents to it.
-    # Our custom msg consists of a seq num, timestamp, name, and an array of uint32s
-    msg.Start (builder)  # serialization starts with the "Start" method
-    msg.AddType (builder, cm.type)
-    msg.AddContent (builder, content_field)  # serialize the name
-    serialized_msg = msg.End (builder)  # get the topic of all these fields
 
-    # end the serialization process
-    builder.Finish (serialized_msg)
+def serialize(curmsg):
+  builder = flatbuffers.Builder(0)
 
-    # get the serialized buffer
-    buf = builder.Output ()
+  # Serialize the content field
+  contents_field = builder.CreateString(curmsg.contents)
 
-    # return this serialized buffer to the caller
-    return buf
+  # Start building the Message
+  msgCompiled.Start(builder)
+  msgCompiled.AddType(builder, curmsg.type)
+  msgCompiled.AddContents(builder, contents_field)
+  serialized_message = msgCompiled.End(builder)
+
+  # Finish building the message
+  builder.Finish(serialized_message)
+
+  # Get the serialized buffer
+  buf = builder.Output()
+
+  # Return the serialized buffer to the caller
+  return buf
+
+
 
 # serialize the custom message to iterable frame objects needed by zmq
 def serialize_to_frames (cm):
@@ -56,20 +53,17 @@ def serialize_to_frames (cm):
   return [serialize (cm)]
   
   
-# deserialize the incoming serialized structure into native data type
-def deserialize (buf):
-    cm = Message ()
-    
-    packet = msg.Message.GetRootAs (buf, 0)
+def deserialize(buf):
 
-    # sequence number
-    cm.type = packet.Type ()
+  result = Message()
+  packet = msgCompiled.Message.GetRootAs(buf, 0)
+  
+  # Create a native Python Message object and populate it
+  result.type = MessageType(packet.Type())
+  result.contents = packet.Contents()
 
-    # name received
-    cm.content = packet.Content ()
+  return result
 
-    return cm
-    
 # deserialize from frames
 def deserialize_from_frames (recvd_seq):
   """ This is invoked on list of frames by zmq """

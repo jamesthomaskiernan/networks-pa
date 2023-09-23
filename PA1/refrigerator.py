@@ -6,8 +6,13 @@ import random # to simulate messages
 import time # use this to measure time it takes to send messages
 
 # files
-from message import Message # our custom message in native format
 import serialize as sz # this is from the file serialize.py in the same directory
+
+# imports for message
+from message import Message # our custom message in native format
+from message import MessageType # enum, 0 1 2
+
+
 
 ################
 # Refrigerator Class #
@@ -148,9 +153,10 @@ def main ():
             
             # create message, set some arbitrary content
             msg = Message()
-            msg.type = 5
-            msg.content = "Hello! This is a message for the health status server!"
+            msg.type = MessageType.HEALTH
+            msg.contents = "Hello! This is a message for the health status server!"
             
+
             # time how long it takes
             start_time = time.time () * 1000 # multiply by 1000 to get ms
             print("Sending message to health status server.")
@@ -164,8 +170,8 @@ def main ():
 
             # create message, set some arbitrary content
             msg = Message()
-            msg.type = 5
-            msg.content = "Hello! This is a message for the grocery server!"
+            msg.type = MessageType.ORDER
+            msg.contents = "Hello! This is a message for the grocery server!"
             
             # time how long it takes
             start_time = time.time () * 1000 # multiply by 1000 to get ms
