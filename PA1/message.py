@@ -28,10 +28,16 @@ class Status(IntEnum):
   GOOD = 0,
   BAD = 1
 
+class Dispenser(IntEnum):
+  OPTIMAL = 0,
+  PARTIAL = 1,
+  BLOCKAGE = 2
+
 @dataclass
 class HealthContents(Contents):
   contents: str # content of message
   sensor_status: Status
+  dispenser: Dispenser
 
   def __init__ (self):
     pass

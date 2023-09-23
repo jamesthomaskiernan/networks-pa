@@ -11,7 +11,7 @@ import serialize as sz # this is from the file serialize.py in the same director
 # imports for message
 from message import Message # our custom message in native format
 from message import MessageType # enum, 0 1 2
-from message import HealthContents, Status
+from message import HealthContents, Status, Dispenser
 from message import OrderContents
 from message import ResponseContents
 
@@ -162,6 +162,7 @@ def main ():
             msg.type = MessageType.HEALTH
             msg.contents = healthcontents
             msg.contents.sensor_status = Status.GOOD
+            msg.contents.dispenser = Dispenser.PARTIAL
             
 
             # time how long it takes

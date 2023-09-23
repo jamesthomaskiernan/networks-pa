@@ -12,13 +12,13 @@ table ResponseContents {
 }
 
 
-// enum Dispenser : byte { OPTIMAL = 0, PARTIAL = 1, BLOCKAGE = 2 }
+enum Dispenser : int { OPTIMAL = 0, PARTIAL = 1, BLOCKAGE = 2 }
 
 enum Status : int { GOOD = 0, BAD = 1 }
 
 table HealthContents {
   contents:string;
-  // dispenser:Dispenser;
+  dispenser:Dispenser;
   // icemaker:ubyte;
   // lightbulb:Status;
   // fridge_temp:int;

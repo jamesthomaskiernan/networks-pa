@@ -49,6 +49,7 @@ def serialize(curmsg):
     # Serialize response contents
     pahcontents.Start (builder)
     pahcontents.AddSensorStatus(builder, curmsg.contents.sensor_status)
+    pahcontents.AddDispenser(builder, curmsg.contents.dispenser)
     pahcontents.AddContents(builder, contents_field)
     ser_contents = pahcontents.End (builder)
 
@@ -116,6 +117,7 @@ def deserialize (buf):
       result.contents = HealthContents()
       result.contents.contents = deser_hcontents.Contents()
       result.contents.sensor_status = deser_hcontents.SensorStatus()
+      result.contents.dispenser = deser_hcontents.Dispenser()
 
 
     # ORDER MESSAGE
