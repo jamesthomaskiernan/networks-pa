@@ -7,7 +7,8 @@ import argparse # for argument parsing
 # files
 from message import Message # our custom message in native format
 from message import MessageType # enum, 0 1 2
-
+from message import ResponseContents
+from message import Code
 
 import serialize as sz # this is from the file serialize.py in the same directory
 
@@ -64,17 +65,28 @@ class GroceryServer ():
 		
 		while True:
 
-			cm = Message()
+			received_msg = Message()
 		
 			# receive message from client
-			cm = self.receive_message()
-			print("Grocery Server received following message:")
-			cm.dump()
+			received_msg = self.receive_message()
+			print("Grocery Server received a message.")
+			received_msg.dump()
 
-			# update message and send it back as a response
-			cm.type = MessageType.RESPONSE
-			cm.contents = "THIS IS A RESPONSE FROM GROCERY"
-			self.send_message(cm)
+			# send message back
+			response = Message()
+			response.type = MessageType.RESPONSE
+			response.contents = ResponseContents()
+			
+			# if message proper type
+			if received_msg.type == MessageType.ORDER:
+				response.code = Code.OK
+				response.contents.contents = "Order placed"
+			# otherwise, set code to bad
+			else:
+				response.code = Code.BAD_REQUEST
+				response.contents.contents = "Bad request"
+
+			self.send_message(response)
 
 	# receives serialized message from clients
 	def receive_message(self):

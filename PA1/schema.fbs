@@ -1,29 +1,30 @@
 // This is the message schema which the fridge will use to communicate with the Grocery and Health Servers, and vice versa
 // run flatc -p schema.fbs to generate corresponding python file, placed in Message directory
 
-namespace MessageNamespace;
+namespace PA;
 
 
-// enum Code : byte { OK = 0, BAD_REQUEST = 1 }
+enum Code : int { OK = 0, BAD_REQUEST = 1 }
 
-// table ResponseContents {
-//   code:Code;
-//   contents:string;
-// }
+table ResponseContents {
+  code:Code;
+  contents:string;
+}
 
 
 // enum Dispenser : byte { OPTIMAL = 0, PARTIAL = 1, BLOCKAGE = 2 }
 
 // enum Status : byte { GOOD = 0, BAD = 1 }
 
-// table HealthContents {
-//   dispenser:Dispenser;
-//   icemaker:ubyte;
-//   lightbulb:Status;
-//   fridge_temp:int;
-//   freezer_temp:int;
-//   sensor_status:Status;
-// }
+table HealthContents {
+  contents:string;
+  // dispenser:Dispenser;
+  // icemaker:ubyte;
+  // lightbulb:Status;
+  // fridge_temp:int;
+  // freezer_temp:int;
+  // sensor_status:Status;
+}
 
 
 // table Cans {
@@ -72,16 +73,17 @@ namespace MessageNamespace;
 //   quantity:float;
 // }
 
-// table OrderContents {
-//   veggies:Veggies;
-//   drinks:Drinks;
-//   milk:[Milk];
-//   bread:[Bread];
-//   meat:[Meat];
-// }
+table OrderContents {
+  // veggies:Veggies;
+  // drinks:Drinks;
+  // milk:[Milk];
+  // bread:[Bread];
+  // meat:[Meat];
+  contents: string;
+}
 
 
-// union Contents { ResponseContents, HealthContents, OrderContents }
+union Contents { ResponseContents, HealthContents, OrderContents }
 
 enum MessageType : int {
   ORDER = 0,
@@ -91,7 +93,7 @@ enum MessageType : int {
 
 table Message {
   type: MessageType = ORDER;
-  contents: string; // was Contents
+  contents: Contents;
 }
 
 root_type Message;

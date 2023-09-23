@@ -11,7 +11,9 @@ import serialize as sz # this is from the file serialize.py in the same director
 # imports for message
 from message import Message # our custom message in native format
 from message import MessageType # enum, 0 1 2
-
+from message import HealthContents
+from message import OrderContents
+from message import ResponseContents
 
 
 ################
@@ -119,7 +121,7 @@ def parseCmdLineArgs ():
     args = parser.parse_args ()
 
     return args
-    
+
 #------------------------------------------
 # main function
 def main ():
@@ -152,9 +154,12 @@ def main ():
         if random.randint(1, 4) == 1:
             
             # create message, set some arbitrary content
+            healthcontents = HealthContents()
+            healthcontents.contents = "Hello! This is a message for the health status server!"
+            
             msg = Message()
             msg.type = MessageType.HEALTH
-            msg.contents = "Hello! This is a message for the health status server!"
+            msg.contents = healthcontents
             
 
             # time how long it takes
@@ -169,9 +174,12 @@ def main ():
         else:
 
             # create message, set some arbitrary content
+            ordercontents = OrderContents()
+            ordercontents.contents = "Hello! This is a message for the grocery server!"
+
             msg = Message()
             msg.type = MessageType.ORDER
-            msg.contents = "Hello! This is a message for the grocery server!"
+            msg.contents = ordercontents
             
             # time how long it takes
             start_time = time.time () * 1000 # multiply by 1000 to get ms

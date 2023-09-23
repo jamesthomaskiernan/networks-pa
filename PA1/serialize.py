@@ -16,22 +16,55 @@ import numpy as np  # to use in our vector field
 import zmq   # we need this for additional constraints provided by the zmq serialization
 
 
+# manual python representation
 from message import MessageType
 from message import Message
-import MessageNamespace.Message as msgCompiled   # this is the generated code by the flatc compiler
+from message import ResponseContents, HealthContents, OrderContents
 
+# flatbuffer compiled representation
+import PA.Message as pamsg   # this is the generated code by the flatc compiler
+import PA.HealthContents as pahcontents
+import PA.OrderContents as paocontents
+import PA.ResponseContents as parcontents
 
 def serialize(curmsg):
   builder = flatbuffers.Builder(0)
 
-  # Serialize the content field
-  contents_field = builder.CreateString(curmsg.contents)
+  ser_contents = None
+  
+  # IF RESPONSE MESSAGE
+  if curmsg.type == MessageType.RESPONSE:
+    
+    contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
+    # Serialize response contents
+    parcontents.Start (builder)
+    # parcontents.AddCode(builder, msg.contents.code)
+    parcontents.AddContents(builder, contents_field)
+    ser_contents = parcontents.End (builder)
+  
+  # IF HEALTH MESSAGE
+  elif curmsg.type == MessageType.HEALTH:
+    contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
+    # Serialize response contents
+    pahcontents.Start (builder)
+    # parcontents.AddCode(builder, msg.contents.code)
+    pahcontents.AddContents(builder, contents_field)
+    ser_contents = pahcontents.End (builder)
+
+  # IF ORDER MESSAGE
+  elif curmsg.type == MessageType.ORDER:
+    contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
+    # Serialize response contents
+    paocontents.Start (builder)
+    # parcontents.AddCode(builder, msg.contents.code)
+    paocontents.AddContents(builder, contents_field)
+    ser_contents = paocontents.End (builder)
 
   # Start building the Message
-  msgCompiled.Start(builder)
-  msgCompiled.AddType(builder, curmsg.type)
-  msgCompiled.AddContents(builder, contents_field)
-  serialized_message = msgCompiled.End(builder)
+  pamsg.Start(builder)
+  pamsg.AddType(builder, curmsg.type)
+  pamsg.AddContents(builder, ser_contents)
+  serialized_message = pamsg.End(builder)
 
   # Finish building the message
   builder.Finish(serialized_message)
@@ -53,16 +86,46 @@ def serialize_to_frames (cm):
   return [serialize (cm)]
   
   
-def deserialize(buf):
+def deserialize (buf):
+    # Native format
+    result = Message()
+    
+    # Flatbuf formatted message from serialized buffer
+    deser_msg = pamsg.Message.GetRootAs(buf, 0)
 
-  result = Message()
-  packet = msgCompiled.Message.GetRootAs(buf, 0)
-  
-  # Create a native Python Message object and populate it
-  result.type = MessageType(packet.Type())
-  result.contents = packet.Contents()
+    # Message type
+    result.type = deser_msg.Type()
 
-  return result
+    # RESPONSE MESSAGE
+    if deser_msg.Type() == MessageType.RESPONSE:
+
+      # Apparently you have to initialize a flatbuffer object from nested tables to get 
+      # the inner attributes
+      deser_rcontents = parcontents.ResponseContents()
+      deser_rcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
+
+      result.contents = ResponseContents()
+      result.contents.code = deser_rcontents.Code() # ADD THIS BACK LATER
+      result.contents.contents = deser_rcontents.Contents()
+    
+    # HEALTH MESSAGE
+    elif deser_msg.Type() == MessageType.HEALTH:
+      deser_hcontents = pahcontents.HealthContents()
+      deser_hcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
+
+      result.contents = HealthContents()
+      result.contents.contents = deser_hcontents.Contents()
+
+
+    # ORDER MESSAGE
+    elif deser_msg.Type() == MessageType.ORDER:
+      deser_ocontents = paocontents.OrderContents()
+      deser_ocontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
+
+      result.contents = OrderContents()
+      result.contents.contents = deser_ocontents.Contents()
+
+    return result
 
 # deserialize from frames
 def deserialize_from_frames (recvd_seq):
