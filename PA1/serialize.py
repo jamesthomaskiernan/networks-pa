@@ -20,6 +20,7 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 from message import MessageType
 from message import Message
 from message import ResponseContents, HealthContents, OrderContents
+from message import Code
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
@@ -38,7 +39,7 @@ def serialize(curmsg):
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
     # Serialize response contents
     parcontents.Start (builder)
-    # parcontents.AddCode(builder, msg.contents.code)
+    parcontents.AddCode(builder, curmsg.contents.code)
     parcontents.AddContents(builder, contents_field)
     ser_contents = parcontents.End (builder)
   
@@ -47,7 +48,6 @@ def serialize(curmsg):
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
     # Serialize response contents
     pahcontents.Start (builder)
-    # parcontents.AddCode(builder, msg.contents.code)
     pahcontents.AddContents(builder, contents_field)
     ser_contents = pahcontents.End (builder)
 
@@ -56,7 +56,6 @@ def serialize(curmsg):
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
     # Serialize response contents
     paocontents.Start (builder)
-    # parcontents.AddCode(builder, msg.contents.code)
     paocontents.AddContents(builder, contents_field)
     ser_contents = paocontents.End (builder)
 
@@ -105,7 +104,7 @@ def deserialize (buf):
       deser_rcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
 
       result.contents = ResponseContents()
-      result.contents.code = deser_rcontents.Code() # ADD THIS BACK LATER
+      result.contents.code = deser_rcontents.Code()
       result.contents.contents = deser_rcontents.Contents()
     
     # HEALTH MESSAGE

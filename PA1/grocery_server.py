@@ -79,11 +79,11 @@ class GroceryServer ():
 			
 			# if message proper type
 			if received_msg.type == MessageType.ORDER:
-				response.code = Code.OK
+				response.contents.code = Code.OK
 				response.contents.contents = "Order placed"
 			# otherwise, set code to bad
 			else:
-				response.code = Code.BAD_REQUEST
+				response.contents.code = Code.BAD_REQUEST
 				response.contents.contents = "Bad request"
 
 			self.send_message(response)

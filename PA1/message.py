@@ -13,8 +13,9 @@ class Contents:
 
 @dataclass
 class ResponseContents(Contents):
-  contents: str # content of message
   code: Code
+  contents: str # content of message
+  
   def __init__ (self):
     pass
 

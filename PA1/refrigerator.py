@@ -167,6 +167,7 @@ def main ():
             print("Sending message to health status server.")
             refrigerator.send_message(refrigerator.health_status_socket, msg)
             msg = refrigerator.receive_message(refrigerator.health_status_socket)
+            msg.dump()
             end_time = time.time () * 1000
             roundtrip_times_zmpq.append(end_time - start_time)
             
@@ -186,6 +187,7 @@ def main ():
             print("Sending message to grocery server.")
             refrigerator.send_message(refrigerator.grocery_socket, msg)
             msg = refrigerator.receive_message(refrigerator.grocery_socket)
+            msg.dump()
             end_time = time.time () * 1000
             roundtrip_times_zmpq.append(end_time - start_time)
 
