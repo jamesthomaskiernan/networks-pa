@@ -1,15 +1,18 @@
 from dataclasses import dataclass
 from enum import IntEnum
 
-class Code (IntEnum):
-  OK = 0,
-  BAD_REQUEST = 1
+
 
 @dataclass
 class Contents:
   def __init__ (self):
     pass
 
+# RESPONSE
+
+class Code(IntEnum):
+  OK = 0,
+  BAD_REQUEST = 1
 
 @dataclass
 class ResponseContents(Contents):
@@ -19,14 +22,21 @@ class ResponseContents(Contents):
   def __init__ (self):
     pass
 
+# HEALTH
+
+class Status(IntEnum):
+  GOOD = 0,
+  BAD = 1
 
 @dataclass
 class HealthContents(Contents):
   contents: str # content of message
+  sensor_status: Status
 
   def __init__ (self):
     pass
 
+# ORDER
 
 @dataclass
 class OrderContents(Contents):
@@ -35,6 +45,7 @@ class OrderContents(Contents):
   def __init__ (self):
     pass
 
+# ROOT MESSAGE
 
 class MessageType (IntEnum):
   ORDER = 0,
@@ -54,13 +65,3 @@ class Message:
     print("Dumping contents of message:")
     print("MessageType: {}".format(self.type))
     print("Content: ", self.contents)
-    
-    
-    # if self.type == MessageType.RESPONSE:
-    #     print("Content: {}".format(self.contents.contents))
-
-    # elif self.type == MessageType.HEALTH:
-    #     print("Content: {}".format(self.contents.contents))
-
-    # elif self.type == MessageType.ORDER:
-    #     print("Content: {}".format(self.contents.contents))

@@ -48,6 +48,7 @@ def serialize(curmsg):
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
     # Serialize response contents
     pahcontents.Start (builder)
+    pahcontents.AddSensorStatus(builder, curmsg.contents.sensor_status)
     pahcontents.AddContents(builder, contents_field)
     ser_contents = pahcontents.End (builder)
 
@@ -111,9 +112,10 @@ def deserialize (buf):
     elif deser_msg.Type() == MessageType.HEALTH:
       deser_hcontents = pahcontents.HealthContents()
       deser_hcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
-
+      
       result.contents = HealthContents()
       result.contents.contents = deser_hcontents.Contents()
+      result.contents.sensor_status = deser_hcontents.SensorStatus()
 
 
     # ORDER MESSAGE

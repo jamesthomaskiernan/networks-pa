@@ -31,8 +31,15 @@ class HealthContents(object):
             return self._tab.String(o + self._tab.Pos)
         return None
 
+    # HealthContents
+    def SensorStatus(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
 def HealthContentsStart(builder):
-    builder.StartObject(1)
+    builder.StartObject(2)
 
 def Start(builder):
     HealthContentsStart(builder)
@@ -42,6 +49,12 @@ def HealthContentsAddContents(builder, contents):
 
 def AddContents(builder, contents):
     HealthContentsAddContents(builder, contents)
+
+def HealthContentsAddSensorStatus(builder, sensorStatus):
+    builder.PrependInt32Slot(1, sensorStatus, 0)
+
+def AddSensorStatus(builder, sensorStatus):
+    HealthContentsAddSensorStatus(builder, sensorStatus)
 
 def HealthContentsEnd(builder):
     return builder.EndObject()

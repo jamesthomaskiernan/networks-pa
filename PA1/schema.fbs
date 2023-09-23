@@ -14,7 +14,7 @@ table ResponseContents {
 
 // enum Dispenser : byte { OPTIMAL = 0, PARTIAL = 1, BLOCKAGE = 2 }
 
-// enum Status : byte { GOOD = 0, BAD = 1 }
+enum Status : int { GOOD = 0, BAD = 1 }
 
 table HealthContents {
   contents:string;
@@ -23,7 +23,7 @@ table HealthContents {
   // lightbulb:Status;
   // fridge_temp:int;
   // freezer_temp:int;
-  // sensor_status:Status;
+  sensor_status:Status;
 }
 
 

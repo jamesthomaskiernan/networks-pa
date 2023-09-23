@@ -11,7 +11,7 @@ import serialize as sz # this is from the file serialize.py in the same director
 # imports for message
 from message import Message # our custom message in native format
 from message import MessageType # enum, 0 1 2
-from message import HealthContents
+from message import HealthContents, Status
 from message import OrderContents
 from message import ResponseContents
 
@@ -151,7 +151,8 @@ def main ():
         # means ~25% of messages will be health messages
         
         # send health message
-        if random.randint(1, 4) == 1:
+        # if random.randint(1, 4) == 1:
+        if True: # CHANGE THIS BACK, PUT HERE TO TEST HEALTH SERVER EXCLUSIVELY
             
             # create message, set some arbitrary content
             healthcontents = HealthContents()
@@ -160,6 +161,7 @@ def main ():
             msg = Message()
             msg.type = MessageType.HEALTH
             msg.contents = healthcontents
+            msg.contents.sensor_status = Status.GOOD
             
 
             # time how long it takes
