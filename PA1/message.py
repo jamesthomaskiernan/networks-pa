@@ -88,7 +88,6 @@ class Veggies:
 class OrderContents(Contents):
   veggies:Veggies
   drinks:Drinks
-  contents: str # content of message
 
   def __init__ (self):
     pass

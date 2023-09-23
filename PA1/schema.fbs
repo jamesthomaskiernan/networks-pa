@@ -81,7 +81,6 @@ table OrderContents {
   // milk:[Milk];
   // bread:[Bread];
   // meat:[Meat];
-  contents: string;
 }
 
 // MESSAGE (ROOT)

@@ -62,7 +62,6 @@ def serialize(curmsg):
 
   # ----order message----
   elif curmsg.type == MessageType.ORDER:
-    contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
     
     # serialize veggies
     paveggies.Start(builder)
@@ -97,7 +96,6 @@ def serialize(curmsg):
     paocontents.Start (builder)
     paocontents.AddVeggies(builder, ser_veggies)
     paocontents.AddDrinks(builder, ser_drinks)
-    paocontents.AddContents(builder, contents_field)
     ser_contents = paocontents.End (builder)
 
   # start building the Message
@@ -165,7 +163,6 @@ def deserialize (buf):
 
       # deserialize order contents
       result.contents = OrderContents()
-      result.contents.contents = deser_ocontents.Contents()
       
       # deserialize veggies
       v = deser_ocontents.Veggies()

@@ -178,7 +178,6 @@ def main ():
 
             # create message, set some arbitrary content
             ordercontents = OrderContents()
-            ordercontents.contents = "Hello! This is a message for the grocery server!"
 
             # add veggies
             v = Veggies()

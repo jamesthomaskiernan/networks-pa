@@ -46,15 +46,8 @@ class OrderContents(object):
             return obj
         return None
 
-    # OrderContents
-    def Contents(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
-
 def OrderContentsStart(builder):
-    builder.StartObject(3)
+    builder.StartObject(2)
 
 def Start(builder):
     OrderContentsStart(builder)
@@ -70,12 +63,6 @@ def OrderContentsAddDrinks(builder, drinks):
 
 def AddDrinks(builder, drinks):
     OrderContentsAddDrinks(builder, drinks)
-
-def OrderContentsAddContents(builder, contents):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(contents), 0)
-
-def AddContents(builder, contents):
-    OrderContentsAddContents(builder, contents)
 
 def OrderContentsEnd(builder):
     return builder.EndObject()
