@@ -25,46 +25,85 @@ class HealthContents(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # HealthContents
-    def Contents(self):
+    def Dispenser(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
 
     # HealthContents
-    def Dispenser(self):
+    def Icemaker(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
     # HealthContents
-    def SensorStatus(self):
+    def Lightbulb(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
+    # HealthContents
+    def FridgeTemp(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
+    # HealthContents
+    def FreezerTemp(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
+    # HealthContents
+    def SensorStatus(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
 def HealthContentsStart(builder):
-    builder.StartObject(3)
+    builder.StartObject(6)
 
 def Start(builder):
     HealthContentsStart(builder)
 
-def HealthContentsAddContents(builder, contents):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(contents), 0)
-
-def AddContents(builder, contents):
-    HealthContentsAddContents(builder, contents)
-
 def HealthContentsAddDispenser(builder, dispenser):
-    builder.PrependInt32Slot(1, dispenser, 0)
+    builder.PrependInt32Slot(0, dispenser, 0)
 
 def AddDispenser(builder, dispenser):
     HealthContentsAddDispenser(builder, dispenser)
 
+def HealthContentsAddIcemaker(builder, icemaker):
+    builder.PrependInt32Slot(1, icemaker, 0)
+
+def AddIcemaker(builder, icemaker):
+    HealthContentsAddIcemaker(builder, icemaker)
+
+def HealthContentsAddLightbulb(builder, lightbulb):
+    builder.PrependInt32Slot(2, lightbulb, 0)
+
+def AddLightbulb(builder, lightbulb):
+    HealthContentsAddLightbulb(builder, lightbulb)
+
+def HealthContentsAddFridgeTemp(builder, fridgeTemp):
+    builder.PrependInt32Slot(3, fridgeTemp, 0)
+
+def AddFridgeTemp(builder, fridgeTemp):
+    HealthContentsAddFridgeTemp(builder, fridgeTemp)
+
+def HealthContentsAddFreezerTemp(builder, freezerTemp):
+    builder.PrependInt32Slot(4, freezerTemp, 0)
+
+def AddFreezerTemp(builder, freezerTemp):
+    HealthContentsAddFreezerTemp(builder, freezerTemp)
+
 def HealthContentsAddSensorStatus(builder, sensorStatus):
-    builder.PrependInt32Slot(2, sensorStatus, 0)
+    builder.PrependInt32Slot(5, sensorStatus, 0)
 
 def AddSensorStatus(builder, sensorStatus):
     HealthContentsAddSensorStatus(builder, sensorStatus)

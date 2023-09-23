@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from enum import IntEnum
 
 
-
 @dataclass
 class Contents:
   def __init__ (self):
@@ -35,9 +34,12 @@ class Dispenser(IntEnum):
 
 @dataclass
 class HealthContents(Contents):
-  contents: str # content of message
-  sensor_status: Status
   dispenser: Dispenser
+  icemaker: int
+  lightbulb: Status
+  fridge_temp: int
+  freezer_temp: int
+  sensor_status: Status
 
   def __init__ (self):
     pass
@@ -51,7 +53,7 @@ class OrderContents(Contents):
   def __init__ (self):
     pass
 
-# ROOT MESSAGE
+# MESSAGE (ROOT)
 
 class MessageType (IntEnum):
   ORDER = 0,

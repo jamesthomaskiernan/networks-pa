@@ -20,7 +20,6 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 from message import MessageType
 from message import Message
 from message import ResponseContents, HealthContents, OrderContents
-from message import Code
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
@@ -33,47 +32,50 @@ def serialize(curmsg):
 
   ser_contents = None
   
-  # IF RESPONSE MESSAGE
+  # ----response message----
   if curmsg.type == MessageType.RESPONSE:
     
+    # first make content string
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
-    # Serialize response contents
+    
+    # then add all fields
     parcontents.Start (builder)
     parcontents.AddCode(builder, curmsg.contents.code)
     parcontents.AddContents(builder, contents_field)
     ser_contents = parcontents.End (builder)
   
-  # IF HEALTH MESSAGE
+  # ----health message----
   elif curmsg.type == MessageType.HEALTH:
-    contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
-    # Serialize response contents
     pahcontents.Start (builder)
-    pahcontents.AddSensorStatus(builder, curmsg.contents.sensor_status)
     pahcontents.AddDispenser(builder, curmsg.contents.dispenser)
-    pahcontents.AddContents(builder, contents_field)
+    pahcontents.AddIcemaker(builder, curmsg.contents.icemaker)
+    pahcontents.AddLightbulb(builder, curmsg.contents.lightbulb)
+    pahcontents.AddFridgeTemp(builder, curmsg.contents.fridge_temp)
+    pahcontents.AddFreezerTemp(builder, curmsg.contents.freezer_temp)
+    pahcontents.AddSensorStatus(builder, curmsg.contents.sensor_status)
     ser_contents = pahcontents.End (builder)
 
-  # IF ORDER MESSAGE
+  # ----order message----
   elif curmsg.type == MessageType.ORDER:
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
-    # Serialize response contents
+    # serialize response contents
     paocontents.Start (builder)
     paocontents.AddContents(builder, contents_field)
     ser_contents = paocontents.End (builder)
 
-  # Start building the Message
+  # start building the Message
   pamsg.Start(builder)
   pamsg.AddType(builder, curmsg.type)
   pamsg.AddContents(builder, ser_contents)
   serialized_message = pamsg.End(builder)
 
-  # Finish building the message
+  # finish building the message
   builder.Finish(serialized_message)
 
-  # Get the serialized buffer
+  # get the serialized buffer
   buf = builder.Output()
 
-  # Return the serialized buffer to the caller
+  # return the serialized buffer to the caller
   return buf
 
 
@@ -88,39 +90,38 @@ def serialize_to_frames (cm):
   
   
 def deserialize (buf):
-    # Native format
+    # native format
     result = Message()
     
-    # Flatbuf formatted message from serialized buffer
+    # flatbuf formatted message from serialized buffer
     deser_msg = pamsg.Message.GetRootAs(buf, 0)
 
-    # Message type
+    # message type
     result.type = deser_msg.Type()
 
-    # RESPONSE MESSAGE
+    # ----response message----
     if deser_msg.Type() == MessageType.RESPONSE:
-
-      # Apparently you have to initialize a flatbuffer object from nested tables to get 
-      # the inner attributes
       deser_rcontents = parcontents.ResponseContents()
-      deser_rcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
+      deser_rcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos) # DON'T FORGET INIT!
 
       result.contents = ResponseContents()
       result.contents.code = deser_rcontents.Code()
       result.contents.contents = deser_rcontents.Contents()
     
-    # HEALTH MESSAGE
+    # ----health message----
     elif deser_msg.Type() == MessageType.HEALTH:
       deser_hcontents = pahcontents.HealthContents()
       deser_hcontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
       
       result.contents = HealthContents()
-      result.contents.contents = deser_hcontents.Contents()
       result.contents.sensor_status = deser_hcontents.SensorStatus()
       result.contents.dispenser = deser_hcontents.Dispenser()
+      result.contents.lightbulb = deser_hcontents.Lightbulb()
+      result.contents.fridge_temp = deser_hcontents.FridgeTemp()
+      result.contents.freezer_temp = deser_hcontents.FreezerTemp()
+      result.contents.icemaker = deser_hcontents.Icemaker()
 
-
-    # ORDER MESSAGE
+    # ----order message----
     elif deser_msg.Type() == MessageType.ORDER:
       deser_ocontents = paocontents.OrderContents()
       deser_ocontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)

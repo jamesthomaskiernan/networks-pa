@@ -3,6 +3,7 @@
 
 namespace PA;
 
+// RESPONSE
 
 enum Code : int { OK = 0, BAD_REQUEST = 1 }
 
@@ -11,21 +12,22 @@ table ResponseContents {
   contents:string;
 }
 
+// HEALTH
 
 enum Dispenser : int { OPTIMAL = 0, PARTIAL = 1, BLOCKAGE = 2 }
 
 enum Status : int { GOOD = 0, BAD = 1 }
 
 table HealthContents {
-  contents:string;
   dispenser:Dispenser;
-  // icemaker:ubyte;
-  // lightbulb:Status;
-  // fridge_temp:int;
-  // freezer_temp:int;
+  icemaker:int;
+  lightbulb:Status;
+  fridge_temp:int;
+  freezer_temp:int;
   sensor_status:Status;
 }
 
+// ORDER
 
 // table Cans {
 //   coke:int;
@@ -82,6 +84,7 @@ table OrderContents {
   contents: string;
 }
 
+// MESSAGE (ROOT)
 
 union Contents { ResponseContents, HealthContents, OrderContents }
 

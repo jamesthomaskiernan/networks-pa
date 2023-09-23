@@ -16,9 +16,9 @@ from message import OrderContents
 from message import ResponseContents
 
 
-################
+######################
 # Refrigerator Class #
-################
+######################
 class Refrigerator ():
     
     # initializer, starts refrigerator and connects to address/port
@@ -151,26 +151,26 @@ def main ():
         # means ~25% of messages will be health messages
         
         # send health message
-        # if random.randint(1, 4) == 1:
-        if True: # CHANGE THIS BACK, PUT HERE TO TEST HEALTH SERVER EXCLUSIVELY
+        if random.randint(1, 4) == 1:
             
             # create message, set some arbitrary content
             healthcontents = HealthContents()
-            healthcontents.contents = "Hello! This is a message for the health status server!"
             
             msg = Message()
             msg.type = MessageType.HEALTH
             msg.contents = healthcontents
             msg.contents.sensor_status = Status.GOOD
             msg.contents.dispenser = Dispenser.PARTIAL
-            
+            msg.contents.lightbulb = Status.BAD
+            msg.contents.fridge_temp = 35
+            msg.contents.freezer_temp = 28
+            msg.contents.icemaker = 9
 
             # time how long it takes
             start_time = time.time () * 1000 # multiply by 1000 to get ms
             print("Sending message to health status server.")
             refrigerator.send_message(refrigerator.health_status_socket, msg)
             msg = refrigerator.receive_message(refrigerator.health_status_socket)
-            msg.dump()
             end_time = time.time () * 1000
             roundtrip_times_zmpq.append(end_time - start_time)
             
@@ -190,7 +190,6 @@ def main ():
             print("Sending message to grocery server.")
             refrigerator.send_message(refrigerator.grocery_socket, msg)
             msg = refrigerator.receive_message(refrigerator.grocery_socket)
-            msg.dump()
             end_time = time.time () * 1000
             roundtrip_times_zmpq.append(end_time - start_time)
 
