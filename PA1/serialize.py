@@ -19,7 +19,8 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 # manual python representation
 from message import MessageType
 from message import Message
-from message import ResponseContents, HealthContents, OrderContents, Veggies
+from message import ResponseContents, HealthContents, OrderContents
+from message import Veggies, Cans, Drinks, Bottles
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
@@ -27,6 +28,9 @@ import PA.HealthContents as pahcontents
 import PA.OrderContents as paocontents
 import PA.ResponseContents as parcontents
 import PA.Veggies as paveggies
+import PA.Drinks as padrinks
+import PA.Bottles as pabottles
+import PA.Cans as pacans
 
 def serialize(curmsg):
   builder = flatbuffers.Builder(0)
@@ -69,9 +73,30 @@ def serialize(curmsg):
     paveggies.AddCarrot(builder, curmsg.contents.veggies.carrot)
     ser_veggies = paveggies.End(builder)
     
-    # serialize response contents
+    # serialize cans
+    pacans.Start(builder)
+    pacans.AddBeer(builder, curmsg.contents.drinks.cans.beer)
+    pacans.AddCoke(builder, curmsg.contents.drinks.cans.coke)
+    pacans.AddPepsi(builder, curmsg.contents.drinks.cans.pepsi)
+    ser_cans = pacans.End(builder)
+
+    # serialize bottles
+    pabottles.Start(builder)
+    pabottles.AddDietcoke(builder, curmsg.contents.drinks.bottles.dietcoke)
+    pabottles.AddFanta(builder, curmsg.contents.drinks.bottles.fanta)
+    pabottles.AddSprite(builder, curmsg.contents.drinks.bottles.sprite)
+    ser_bottles = pabottles.End(builder)
+
+    # serialize drinks
+    padrinks.Start(builder)
+    padrinks.AddBottles(builder, ser_bottles)
+    padrinks.AddCans(builder, ser_cans)
+    ser_drinks = padrinks.End(builder)
+
+    # serialize order contents
     paocontents.Start (builder)
     paocontents.AddVeggies(builder, ser_veggies)
+    paocontents.AddDrinks(builder, ser_drinks)
     paocontents.AddContents(builder, contents_field)
     ser_contents = paocontents.End (builder)
 
@@ -150,6 +175,24 @@ def deserialize (buf):
       result.contents.veggies.broccoli = v.Broccoli()
       result.contents.veggies.potato = v.Potato()
       result.contents.veggies.carrot = v.Carrot()
+      
+      # Deserialize drinks
+      d = deser_ocontents.Drinks()
+      result.contents.drinks = Drinks()
+
+      # Deserialize cans
+      cans = d.Cans()
+      result.contents.drinks.cans = Cans()
+      result.contents.drinks.cans.beer = cans.Beer()
+      result.contents.drinks.cans.coke = cans.Coke()
+      result.contents.drinks.cans.pepsi = cans.Pepsi()
+
+      # Deserialize bottles
+      bottles = d.Bottles()
+      result.contents.drinks.bottles = Bottles()
+      result.contents.drinks.bottles.dietcoke = bottles.Dietcoke()
+      result.contents.drinks.bottles.fanta = bottles.Fanta()
+      result.contents.drinks.bottles.sprite = bottles.Sprite()
 
     return result
 

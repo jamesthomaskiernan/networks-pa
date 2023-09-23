@@ -47,7 +47,34 @@ class HealthContents(Contents):
 # ORDER
 
 @dataclass
-class Veggies: 
+class Cans: 
+  coke:int
+  beer:int
+  pepsi:int
+  
+  def __init__ (self):
+    pass
+
+@dataclass
+class Bottles: 
+  sprite:int
+  fanta:int
+  dietcoke:int
+  
+  def __init__ (self):
+    pass
+
+@dataclass
+class Drinks: 
+  cans:Cans
+  bottles:Bottles
+  
+  def __init__ (self):
+    pass
+
+
+@dataclass
+class Veggies:
   tomato:float
   cucumber:float
   broccoli:float
@@ -57,11 +84,10 @@ class Veggies:
   def __init__ (self):
     pass
 
-
-
 @dataclass
 class OrderContents(Contents):
   veggies:Veggies
+  drinks:Drinks
   contents: str # content of message
 
   def __init__ (self):
