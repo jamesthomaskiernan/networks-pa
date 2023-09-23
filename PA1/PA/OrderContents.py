@@ -25,20 +25,37 @@ class OrderContents(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # OrderContents
-    def Contents(self):
+    def Veggies(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            x = self._tab.Indirect(o + self._tab.Pos)
+            from PA.Veggies import Veggies
+            obj = Veggies()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # OrderContents
+    def Contents(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
 def OrderContentsStart(builder):
-    builder.StartObject(1)
+    builder.StartObject(2)
 
 def Start(builder):
     OrderContentsStart(builder)
 
+def OrderContentsAddVeggies(builder, veggies):
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(veggies), 0)
+
+def AddVeggies(builder, veggies):
+    OrderContentsAddVeggies(builder, veggies)
+
 def OrderContentsAddContents(builder, contents):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(contents), 0)
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(contents), 0)
 
 def AddContents(builder, contents):
     OrderContentsAddContents(builder, contents)

@@ -19,13 +19,14 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 # manual python representation
 from message import MessageType
 from message import Message
-from message import ResponseContents, HealthContents, OrderContents
+from message import ResponseContents, HealthContents, OrderContents, Veggies
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
 import PA.HealthContents as pahcontents
 import PA.OrderContents as paocontents
 import PA.ResponseContents as parcontents
+import PA.Veggies as paveggies
 
 def serialize(curmsg):
   builder = flatbuffers.Builder(0)
@@ -58,8 +59,19 @@ def serialize(curmsg):
   # ----order message----
   elif curmsg.type == MessageType.ORDER:
     contents_field = builder.CreateString(curmsg.contents.contents) # contents is string
+    
+    # serialize veggies
+    paveggies.Start(builder)
+    paveggies.AddTomato(builder, curmsg.contents.veggies.tomato)
+    paveggies.AddCucumber(builder, curmsg.contents.veggies.cucumber)
+    paveggies.AddBroccoli(builder, curmsg.contents.veggies.broccoli)
+    paveggies.AddPotato(builder, curmsg.contents.veggies.potato)
+    paveggies.AddCarrot(builder, curmsg.contents.veggies.carrot)
+    ser_veggies = paveggies.End(builder)
+    
     # serialize response contents
     paocontents.Start (builder)
+    paocontents.AddVeggies(builder, ser_veggies)
     paocontents.AddContents(builder, contents_field)
     ser_contents = paocontents.End (builder)
 
@@ -126,8 +138,18 @@ def deserialize (buf):
       deser_ocontents = paocontents.OrderContents()
       deser_ocontents.Init(deser_msg.Contents().Bytes, deser_msg.Contents().Pos)
 
+      # deserialize order contents
       result.contents = OrderContents()
       result.contents.contents = deser_ocontents.Contents()
+      
+      # deserialize veggies
+      v = deser_ocontents.Veggies()
+      result.contents.veggies = Veggies()
+      result.contents.veggies.tomato = v.Tomato()
+      result.contents.veggies.cucumber = v.Cucumber()
+      result.contents.veggies.broccoli = v.Broccoli()
+      result.contents.veggies.potato = v.Potato()
+      result.contents.veggies.carrot = v.Carrot()
 
     return result
 

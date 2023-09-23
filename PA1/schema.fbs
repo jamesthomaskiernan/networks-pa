@@ -46,13 +46,13 @@ table HealthContents {
 //   bottles:Bottles;
 // }
 
-// table Veggies {
-//   tomato:float;
-//   cucumber:float;
-//   broccoli:float;
-//   potato:float;
-//   carrot:float;
-// }
+table Veggies {
+  tomato:float;
+  cucumber:float;
+  broccoli:float;
+  potato:float;
+  carrot:float;
+}
 
 // enum MilkType : byte { ONEPERCENT = 0, TWOPERCENT = 1, FATFREE = 2, WHOLE = 3, ALMOND = 4, CASHEW = 5, OAT = 6 }
 
@@ -76,7 +76,7 @@ table HealthContents {
 // }
 
 table OrderContents {
-  // veggies:Veggies;
+  veggies:Veggies;
   // drinks:Drinks;
   // milk:[Milk];
   // bread:[Bread];

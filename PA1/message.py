@@ -47,7 +47,21 @@ class HealthContents(Contents):
 # ORDER
 
 @dataclass
+class Veggies: 
+  tomato:float
+  cucumber:float
+  broccoli:float
+  potato:float
+  carrot:float
+  
+  def __init__ (self):
+    pass
+
+
+
+@dataclass
 class OrderContents(Contents):
+  veggies:Veggies
   contents: str # content of message
 
   def __init__ (self):
