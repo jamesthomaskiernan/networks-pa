@@ -84,10 +84,25 @@ class Veggies:
   def __init__ (self):
     pass
 
+class MeatType(IntEnum):
+  CHICKEN = 0,
+  BEEF = 1,
+  PORK = 2,
+  TURKEY = 3
+
+@dataclass
+class Meat:
+  type:MeatType
+  quantity:float
+
+  def __init__ (self):
+    pass
+
 @dataclass
 class OrderContents(Contents):
   veggies:Veggies
   drinks:Drinks
+  meat:list[Meat]
 
   def __init__ (self):
     pass

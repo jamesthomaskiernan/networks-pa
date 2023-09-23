@@ -46,8 +46,33 @@ class OrderContents(object):
             return obj
         return None
 
+    # OrderContents
+    def Meat(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            x = self._tab.Vector(o)
+            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
+            x = self._tab.Indirect(x)
+            from PA.Meat import Meat
+            obj = Meat()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # OrderContents
+    def MeatLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # OrderContents
+    def MeatIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        return o == 0
+
 def OrderContentsStart(builder):
-    builder.StartObject(2)
+    builder.StartObject(3)
 
 def Start(builder):
     OrderContentsStart(builder)
@@ -63,6 +88,18 @@ def OrderContentsAddDrinks(builder, drinks):
 
 def AddDrinks(builder, drinks):
     OrderContentsAddDrinks(builder, drinks)
+
+def OrderContentsAddMeat(builder, meat):
+    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(meat), 0)
+
+def AddMeat(builder, meat):
+    OrderContentsAddMeat(builder, meat)
+
+def OrderContentsStartMeatVector(builder, numElems):
+    return builder.StartVector(4, numElems, 4)
+
+def StartMeatVector(builder, numElems: int) -> int:
+    return OrderContentsStartMeatVector(builder, numElems)
 
 def OrderContentsEnd(builder):
     return builder.EndObject()

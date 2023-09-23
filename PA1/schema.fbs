@@ -54,7 +54,7 @@ table Veggies {
   carrot:float;
 }
 
-// enum MilkType : byte { ONEPERCENT = 0, TWOPERCENT = 1, FATFREE = 2, WHOLE = 3, ALMOND = 4, CASHEW = 5, OAT = 6 }
+enum MilkType : byte { ONEPERCENT = 0, TWOPERCENT = 1, FATFREE = 2, WHOLE = 3, ALMOND = 4, CASHEW = 5, OAT = 6 }
 
 // table Milk {
 //   type:MilkType;
@@ -68,19 +68,19 @@ table Veggies {
 //   quantity:int;
 // }
 
-// enum MeatType : byte { CHICKEN = 0, BEEF = 1, PORK = 2, TURKEY = 3 }
+enum MeatType : byte { CHICKEN = 0, BEEF = 1, PORK = 2, TURKEY = 3 }
 
-// table Meat {
-//   type:MeatType;
-//   quantity:float;
-// }
+table Meat {
+  type:MeatType;
+  quantity:float;
+}
 
 table OrderContents {
   veggies:Veggies;
   drinks:Drinks;
   // milk:[Milk];
   // bread:[Bread];
-  // meat:[Meat];
+  meat:[Meat];
 }
 
 // MESSAGE (ROOT)

@@ -20,7 +20,7 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 from message import MessageType
 from message import Message
 from message import ResponseContents, HealthContents, OrderContents
-from message import Veggies, Cans, Drinks, Bottles
+from message import Veggies, Cans, Drinks, Bottles, Meat, MeatType
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
@@ -31,6 +31,7 @@ import PA.Veggies as paveggies
 import PA.Drinks as padrinks
 import PA.Bottles as pabottles
 import PA.Cans as pacans
+import PA.Meat as pameat
 
 def serialize(curmsg):
   builder = flatbuffers.Builder(0)
@@ -92,11 +93,29 @@ def serialize(curmsg):
     padrinks.AddCans(builder, ser_cans)
     ser_drinks = padrinks.End(builder)
 
-    # serialize order contents
-    paocontents.Start (builder)
+
+    # serialize each meat, and put it into an array
+    ser_meat = []
+    for i in range(len(curmsg.contents.meat)):
+      pameat.Start(builder)
+      pameat.AddQuantity(builder, curmsg.contents.meat[i].quantity)
+      pameat.AddType(builder, curmsg.contents.meat[i].type)
+      ser_meat.append(pameat.End(builder))
+
+    # serialize meat list and add it to contents
+    paocontents.StartMeatVector(builder, len (curmsg.contents.meat))
+    for i in reversed (range (len (curmsg.contents.meat))):
+      builder.PrependUOffsetTRelative(ser_meat[i])
+    ser_meat_list = builder.EndVector()
+
+    # serialize all order contents
+    paocontents.Start(builder)
+    paocontents.AddMeat(builder, ser_meat_list)
     paocontents.AddVeggies(builder, ser_veggies)
     paocontents.AddDrinks(builder, ser_drinks)
-    ser_contents = paocontents.End (builder)
+    ser_contents = paocontents.End(builder)
+
+
 
   # start building the Message
   pamsg.Start(builder)
@@ -173,23 +192,33 @@ def deserialize (buf):
       result.contents.veggies.potato = v.Potato()
       result.contents.veggies.carrot = v.Carrot()
       
-      # Deserialize drinks
+      # deserialize drinks
       d = deser_ocontents.Drinks()
       result.contents.drinks = Drinks()
 
-      # Deserialize cans
+      # deserialize cans
       cans = d.Cans()
       result.contents.drinks.cans = Cans()
       result.contents.drinks.cans.beer = cans.Beer()
       result.contents.drinks.cans.coke = cans.Coke()
       result.contents.drinks.cans.pepsi = cans.Pepsi()
 
-      # Deserialize bottles
+      # deserialize bottles
       bottles = d.Bottles()
       result.contents.drinks.bottles = Bottles()
       result.contents.drinks.bottles.dietcoke = bottles.Dietcoke()
       result.contents.drinks.bottles.fanta = bottles.Fanta()
       result.contents.drinks.bottles.sprite = bottles.Sprite()
+
+      # deserialize meat
+      meat_list = []
+      for i in range(deser_ocontents.MeatLength()):
+          pameat = deser_ocontents.Meat(i)
+          meat_item = Meat()
+          meat_item.quantity = pameat.Quantity()
+          meat_item.type = pameat.Type()
+          meat_list.append(meat_item)
+      result.contents.meat = meat_list
 
     return result
 

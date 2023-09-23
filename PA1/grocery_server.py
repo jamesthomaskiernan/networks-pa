@@ -71,7 +71,7 @@ class GroceryServer ():
 			received_msg = self.receive_message()
 			print("Grocery Server received a message.")
 			received_msg.dump()
-
+			
 			# send message back
 			response = Message()
 			response.type = MessageType.RESPONSE
