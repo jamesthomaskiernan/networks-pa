@@ -72,7 +72,6 @@ class Drinks:
   def __init__ (self):
     pass
 
-
 @dataclass
 class Veggies:
   tomato:float

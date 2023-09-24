@@ -105,7 +105,6 @@ class Refrigerator ():
             raise
 
 
-   
 ########################
 # Command line parsing #
 ########################
@@ -188,7 +187,7 @@ def main ():
             v.tomato = 1
             ordercontents.veggies = v
 
-            # add Drinks
+            # add drinks
             d = Drinks()
 
             # add bottles
@@ -206,7 +205,6 @@ def main ():
             d.cans = c
 
             ordercontents.drinks = d
-
 
             # add meat
             meat1 = Meat()
@@ -237,7 +235,7 @@ def main ():
             bread2.type = BreadType.RYE
             bread2.quantity = 3
             ordercontents.bread = [bread1, bread2]
-
+            
             msg = Message()
             msg.type = MessageType.ORDER
             msg.contents = ordercontents
