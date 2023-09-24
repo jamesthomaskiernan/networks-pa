@@ -115,12 +115,27 @@ class Milk:
   def __init__ (self):
     pass
 
+class BreadType(IntEnum):
+  WHOLEWHEAT = 0,
+  WHITE = 1,
+  BUTTERMILK = 2,
+  RYE = 3
+
+@dataclass
+class Bread:
+  type:BreadType
+  quantity:int
+
+  def __init__ (self):
+    pass
+
 @dataclass
 class OrderContents(Contents):
   veggies:Veggies
   drinks:Drinks
   meat:list[Meat]
   milk:list[Milk]
+  bread:list[Bread]
 
   def __init__ (self):
     pass

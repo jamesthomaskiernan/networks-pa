@@ -20,7 +20,7 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 from message import MessageType
 from message import Message
 from message import ResponseContents, HealthContents, OrderContents
-from message import Veggies, Cans, Drinks, Bottles, Meat, Milk
+from message import Veggies, Cans, Drinks, Bottles, Meat, Milk, Bread
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
@@ -33,6 +33,7 @@ import PA.Bottles as pabottles
 import PA.Cans as pacans
 import PA.Meat as pameat
 import PA.Milk as pamilk
+import PA.Bread as pabread
 
 def serialize(curmsg):
   builder = flatbuffers.Builder(0)
@@ -94,6 +95,8 @@ def serialize(curmsg):
     padrinks.AddCans(builder, ser_cans)
     ser_drinks = padrinks.End(builder)
 
+    # Meat
+
     # serialize each meat, and put it into an array
     ser_meat = []
     for i in range(len(curmsg.contents.meat)):
@@ -107,6 +110,8 @@ def serialize(curmsg):
     for i in reversed (range (len (curmsg.contents.meat))):
       builder.PrependUOffsetTRelative(ser_meat[i])
     ser_meat_list = builder.EndVector()
+
+    # Milk
 
     # serialize each milk, and put it into an array
     ser_milk = []
@@ -122,18 +127,30 @@ def serialize(curmsg):
       builder.PrependUOffsetTRelative(ser_milk[i])
     ser_milk_list = builder.EndVector()
 
+    # Bread
 
+    # serialize each bread, and put it into an array
+    ser_bread = []
+    for i in range(len(curmsg.contents.bread)):
+      pabread.Start(builder)
+      pabread.AddQuantity(builder, curmsg.contents.bread[i].quantity)
+      pabread.AddType(builder, curmsg.contents.bread[i].type)
+      ser_bread.append(pabread.End(builder))
 
+    # serialize bread list and add it to contents
+    paocontents.StartBreadVector(builder, len (curmsg.contents.bread))
+    for i in reversed (range (len (curmsg.contents.bread))):
+      builder.PrependUOffsetTRelative(ser_bread[i])
+    ser_bread_list = builder.EndVector()
 
     # serialize all order contents
     paocontents.Start(builder)
     paocontents.AddMeat(builder, ser_meat_list)
     paocontents.AddMilk(builder, ser_milk_list)
+    paocontents.AddBread(builder, ser_bread_list)
     paocontents.AddVeggies(builder, ser_veggies)
     paocontents.AddDrinks(builder, ser_drinks)
     ser_contents = paocontents.End(builder)
-
-
 
   # start building the Message
   pamsg.Start(builder)
@@ -231,22 +248,32 @@ def deserialize (buf):
       # deserialize meat
       meat_list = []
       for i in range(deser_ocontents.MeatLength()):
-          pameat = deser_ocontents.Meat(i)
+          pameatitem = deser_ocontents.Meat(i)
           meat_item = Meat()
-          meat_item.quantity = pameat.Quantity()
-          meat_item.type = pameat.Type()
+          meat_item.quantity = pameatitem.Quantity()
+          meat_item.type = pameatitem.Type()
           meat_list.append(meat_item)
       result.contents.meat = meat_list
 
       # deserialize milk
       milk_list = []
       for i in range(deser_ocontents.MilkLength()):
-          pamilk = deser_ocontents.Milk(i)
+          pamilkitem = deser_ocontents.Milk(i)
           milk_item = Milk()
-          milk_item.quantity = pamilk.Quantity()
-          milk_item.type = pamilk.Type()
+          milk_item.quantity = pamilkitem.Quantity()
+          milk_item.type = pamilkitem.Type()
           milk_list.append(milk_item)
       result.contents.milk = milk_list
+
+      # deserialize bread
+      bread_list = []
+      for i in range(deser_ocontents.BreadLength()):
+          pabreaditem = deser_ocontents.Bread(i)
+          bread_item = Bread()
+          bread_item.quantity = pabreaditem.Quantity()
+          bread_item.type = pabreaditem.Type()
+          bread_list.append(bread_item)
+      result.contents.bread = bread_list
 
     return result
 

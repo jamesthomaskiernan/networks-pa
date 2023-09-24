@@ -72,8 +72,33 @@ class OrderContents(object):
         return o == 0
 
     # OrderContents
-    def Meat(self, j):
+    def Bread(self, j):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            x = self._tab.Vector(o)
+            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
+            x = self._tab.Indirect(x)
+            from PA.Bread import Bread
+            obj = Bread()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # OrderContents
+    def BreadLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # OrderContents
+    def BreadIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        return o == 0
+
+    # OrderContents
+    def Meat(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
@@ -86,18 +111,18 @@ class OrderContents(object):
 
     # OrderContents
     def MeatLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # OrderContents
     def MeatIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         return o == 0
 
 def OrderContentsStart(builder):
-    builder.StartObject(4)
+    builder.StartObject(5)
 
 def Start(builder):
     OrderContentsStart(builder)
@@ -126,8 +151,20 @@ def OrderContentsStartMilkVector(builder, numElems):
 def StartMilkVector(builder, numElems: int) -> int:
     return OrderContentsStartMilkVector(builder, numElems)
 
+def OrderContentsAddBread(builder, bread):
+    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(bread), 0)
+
+def AddBread(builder, bread):
+    OrderContentsAddBread(builder, bread)
+
+def OrderContentsStartBreadVector(builder, numElems):
+    return builder.StartVector(4, numElems, 4)
+
+def StartBreadVector(builder, numElems: int) -> int:
+    return OrderContentsStartBreadVector(builder, numElems)
+
 def OrderContentsAddMeat(builder, meat):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(meat), 0)
+    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(meat), 0)
 
 def AddMeat(builder, meat):
     OrderContentsAddMeat(builder, meat)
