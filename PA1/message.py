@@ -98,11 +98,29 @@ class Meat:
   def __init__ (self):
     pass
 
+class MilkType(IntEnum):
+  ONEPERCENT = 0, 
+  TWOPERCENT = 1, 
+  FATFREE = 2, 
+  WHOLE = 3, 
+  ALMOND = 4, 
+  CASHEW = 5, 
+  OAT = 6
+
+@dataclass
+class Milk:
+  type:MilkType
+  quantity:float
+
+  def __init__ (self):
+    pass
+
 @dataclass
 class OrderContents(Contents):
   veggies:Veggies
   drinks:Drinks
   meat:list[Meat]
+  milk:list[Milk]
 
   def __init__ (self):
     pass

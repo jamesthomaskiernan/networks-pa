@@ -20,7 +20,7 @@ import zmq   # we need this for additional constraints provided by the zmq seria
 from message import MessageType
 from message import Message
 from message import ResponseContents, HealthContents, OrderContents
-from message import Veggies, Cans, Drinks, Bottles, Meat, MeatType
+from message import Veggies, Cans, Drinks, Bottles, Meat, Milk
 
 # flatbuffer compiled representation
 import PA.Message as pamsg   # this is the generated code by the flatc compiler
@@ -32,6 +32,7 @@ import PA.Drinks as padrinks
 import PA.Bottles as pabottles
 import PA.Cans as pacans
 import PA.Meat as pameat
+import PA.Milk as pamilk
 
 def serialize(curmsg):
   builder = flatbuffers.Builder(0)
@@ -93,7 +94,6 @@ def serialize(curmsg):
     padrinks.AddCans(builder, ser_cans)
     ser_drinks = padrinks.End(builder)
 
-
     # serialize each meat, and put it into an array
     ser_meat = []
     for i in range(len(curmsg.contents.meat)):
@@ -108,9 +108,27 @@ def serialize(curmsg):
       builder.PrependUOffsetTRelative(ser_meat[i])
     ser_meat_list = builder.EndVector()
 
+    # serialize each milk, and put it into an array
+    ser_milk = []
+    for i in range(len(curmsg.contents.milk)):
+      pamilk.Start(builder)
+      pamilk.AddQuantity(builder, curmsg.contents.milk[i].quantity)
+      pamilk.AddType(builder, curmsg.contents.milk[i].type)
+      ser_milk.append(pamilk.End(builder))
+
+    # serialize milk list and add it to contents
+    paocontents.StartMilkVector(builder, len (curmsg.contents.milk))
+    for i in reversed (range (len (curmsg.contents.milk))):
+      builder.PrependUOffsetTRelative(ser_milk[i])
+    ser_milk_list = builder.EndVector()
+
+
+
+
     # serialize all order contents
     paocontents.Start(builder)
     paocontents.AddMeat(builder, ser_meat_list)
+    paocontents.AddMilk(builder, ser_milk_list)
     paocontents.AddVeggies(builder, ser_veggies)
     paocontents.AddDrinks(builder, ser_drinks)
     ser_contents = paocontents.End(builder)
@@ -219,6 +237,16 @@ def deserialize (buf):
           meat_item.type = pameat.Type()
           meat_list.append(meat_item)
       result.contents.meat = meat_list
+
+      # deserialize milk
+      milk_list = []
+      for i in range(deser_ocontents.MilkLength()):
+          pamilk = deser_ocontents.Milk(i)
+          milk_item = Milk()
+          milk_item.quantity = pamilk.Quantity()
+          milk_item.type = pamilk.Type()
+          milk_list.append(milk_item)
+      result.contents.milk = milk_list
 
     return result
 

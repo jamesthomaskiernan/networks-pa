@@ -56,10 +56,10 @@ table Veggies {
 
 enum MilkType : byte { ONEPERCENT = 0, TWOPERCENT = 1, FATFREE = 2, WHOLE = 3, ALMOND = 4, CASHEW = 5, OAT = 6 }
 
-// table Milk {
-//   type:MilkType;
-//   quantity:float;
-// }
+table Milk {
+  type:MilkType;
+  quantity:float;
+}
 
 // enum BreadType : byte { WHOLEWHEAT = 0, WHITE = 1, BUTTERMILK = 2, RYE = 3 }
 
@@ -78,7 +78,7 @@ table Meat {
 table OrderContents {
   veggies:Veggies;
   drinks:Drinks;
-  // milk:[Milk];
+  milk:[Milk];
   // bread:[Bread];
   meat:[Meat];
 }

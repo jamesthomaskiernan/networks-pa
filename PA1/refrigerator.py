@@ -12,7 +12,7 @@ import serialize as sz # this is from the file serialize.py in the same director
 from message import Message # our custom message in native format
 from message import MessageType # enum, 0 1 2
 from message import HealthContents, Status, Dispenser
-from message import OrderContents, Veggies, Drinks, Bottles, Cans, Meat, MeatType
+from message import OrderContents, Veggies, Drinks, Bottles, Cans, Meat, MeatType, Milk, MilkType
 
 
 ######################
@@ -220,6 +220,14 @@ def main ():
             meat3.quantity = 1
             ordercontents.meat = [meat1, meat2, meat3]
 
+            # add milk
+            milk1 = Milk()
+            milk1.type = MilkType.ALMOND
+            milk1.quantity = 2
+            milk2 = Milk()
+            milk2.type = MilkType.OAT
+            milk2.quantity = 1
+            ordercontents.milk = [milk1, milk2]
 
 
             msg = Message()
