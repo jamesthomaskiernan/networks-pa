@@ -2,9 +2,14 @@
 import sys # for system exception
 import zmq # this package must be imported for ZMQ to work
 import time # for sleeping
+import argparse # for argument parsing
 
 # files
 from message import Message # our custom message in native format
+from message import MessageType # enum, 0 1 2
+from message import ResponseContents
+from message import Code
+
 import serialize as sz # this is from the file serialize.py in the same directory
 
 ########################
@@ -13,7 +18,7 @@ import serialize as sz # this is from the file serialize.py in the same director
 class GroceryServer ():
 	
 	# initializer, starts server and begins listening
-	def __init__(self, port = 5555, address = "*"):
+	def __init__(self, port = 5555, intf = "*"):
 		
 		print("Grocery Server starting...")
 
@@ -43,7 +48,7 @@ class GroceryServer ():
 
 		# bind server
 		try:
-			bind_string = "tcp://" + address + ":" + str (port)
+			bind_string = "tcp://" + intf + ":" + str (port)
 			print ("Grocery Server will be binding on {}".format (bind_string))
 			self.socket.bind (bind_string)
 		except zmq.ZMQError as err:
@@ -60,16 +65,28 @@ class GroceryServer ():
 		
 		while True:
 
-			cm = Message()
+			received_msg = Message()
 		
 			# receive message from client
-			cm = self.receive_message()
-			print("Grocery Server received following message:")
-			cm.dump()
+			received_msg = self.receive_message()
+			print("Grocery Server received a message.")
+			received_msg.dump()
+			
+			# send message back
+			response = Message()
+			response.type = MessageType.RESPONSE
+			response.contents = ResponseContents()
+			
+			# if message proper type
+			if received_msg.type == MessageType.ORDER:
+				response.contents.code = Code.OK
+				response.contents.contents = "Order placed"
+			# otherwise, set code to bad
+			else:
+				response.contents.code = Code.BAD_REQUEST
+				response.contents.contents = "Bad request"
 
-			# update message and send it back as a response
-			cm.content = "THIS IS A RESPONSE FROM GROCERY"
-			self.send_message(cm)
+			self.send_message(response)
 
 	# receives serialized message from clients
 	def receive_message(self):
@@ -96,4 +113,40 @@ class GroceryServer ():
 			print ("Some exception occurred with send_serialized {}".format (sys.exc_info()[0]))
 			raise
 
-server = GroceryServer(5555, "*")
+
+########################
+# Command line parsing #
+########################
+def parseCmdLineArgs ():
+	# parse the command line
+	parser = argparse.ArgumentParser ()
+
+	# add optional arguments
+	parser.add_argument ("-i", "--intf", default="*", help="Interface to bind to (default: *)")
+	parser.add_argument ("-p", "--port", type=int, default=5555, help="Port to bind to (default: 5555)")
+	args = parser.parse_args ()
+
+	return args
+    
+#------------------------------------------
+# main function
+def main ():
+	""" Main program """
+
+	print("Demo Grocery Server")
+
+	# first parse the command line args
+	parsed_args = parseCmdLineArgs ()
+		
+	# start the server code
+	server = GroceryServer(**vars(parsed_args))
+
+#----------------------------------------------
+if __name__ == '__main__':
+	# here we just print the version numbers
+	print("Current libzmq version is %s" % zmq.zmq_version())
+	print("Current pyzmq version is %s" % zmq.pyzmq_version())
+
+	main ()
+
+

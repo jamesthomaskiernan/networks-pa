@@ -1,11 +1,101 @@
 // This is the message schema which the fridge will use to communicate with the Grocery and Health Servers, and vice versa
-// run flatc -p schema.fbs to generate corresponding python file, placed in Message directory
+// run flatc -p schema.fbs to generate corresponding python files, placed in PA directory
 
-namespace MessageNamespace;
+namespace PA;
+
+// RESPONSE
+
+enum Code : int { OK = 0, BAD_REQUEST = 1 }
+
+table ResponseContents {
+  code:Code;
+  contents:string;
+}
+
+// HEALTH
+
+enum Dispenser : int { OPTIMAL = 0, PARTIAL = 1, BLOCKAGE = 2 }
+
+enum Status : int { GOOD = 0, BAD = 1 }
+
+table HealthContents {
+  dispenser:Dispenser;
+  icemaker:int;
+  lightbulb:Status;
+  fridge_temp:int;
+  freezer_temp:int;
+  sensor_status:Status;
+}
+
+// ORDER
+
+table Cans {
+  coke:int;
+  beer:int;
+  pepsi:int;
+}
+
+table Bottles {
+  sprite:int;
+  fanta:int;
+  dietcoke:int;
+}
+
+table Drinks {
+  cans:Cans;
+  bottles:Bottles;
+}
+
+table Veggies {
+  tomato:float;
+  cucumber:float;
+  broccoli:float;
+  potato:float;
+  carrot:float;
+}
+
+enum MilkType : int { ONEPERCENT = 0, TWOPERCENT = 1, FATFREE = 2, WHOLE = 3, ALMOND = 4, CASHEW = 5, OAT = 6 }
+
+table Milk {
+  type:MilkType;
+  quantity:float;
+}
+
+enum BreadType : int { WHOLEWHEAT = 0, WHITE = 1, BUTTERMILK = 2, RYE = 3 }
+
+table Bread {
+  type:BreadType;
+  quantity:int;
+}
+
+enum MeatType : int { CHICKEN = 0, BEEF = 1, PORK = 2, TURKEY = 3 }
+
+table Meat {
+  type:MeatType;
+  quantity:float;
+}
+
+table OrderContents {
+  veggies:Veggies;
+  drinks:Drinks;
+  milk:[Milk];
+  bread:[Bread];
+  meat:[Meat];
+}
+
+// MESSAGE (ROOT)
+
+union Contents { ResponseContents, HealthContents, OrderContents }
+
+enum MessageType : int {
+  ORDER = 0,
+  HEALTH = 1,
+  RESPONSE = 2
+}
 
 table Message {
-  type:int;
-  content:string;
+  type: MessageType = ORDER;
+  contents: Contents;
 }
 
 root_type Message;
