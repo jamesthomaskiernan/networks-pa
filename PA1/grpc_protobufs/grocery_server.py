@@ -13,25 +13,25 @@ import grpc   # for gRPC
 # import generated packages
 import schema_pb2 as spb
 import schema_pb2_grpc as spb_grpc
-from declarations import MessageType
 
 ####################
 #  Service Handler #
 ####################
 class ServiceHandler (spb_grpc.DummyServiceServicer):
   
-  def method (self, request, context):
+  def method (self, req, context):
     """ Handle request message """
     try:
-      print(request)
 
-      # Now send response
-      resp = spb.Response ()  # allocate the response object. Note it is empty
+      print(req)
       
-
-      resp.type = 2 # Return message type
-      resp.code = 0 # Good return code
-      resp.contents = "You are Healthy" 
+      # create response and send it back
+      resp = spb.Message()
+      resp.type = spb.MessageType.RESPONSE
+      rc = spb.ResponseContents()
+      rc.contents = "Order placed"
+      rc.code = spb.Code.OK
+      resp.response_contents.CopyFrom(rc)
 
       return resp   # note that this is what is supposed to be returned
     except:
@@ -63,24 +63,24 @@ def main ():
   # first parse the command line args
   parsed_args = parseCmdLineArgs ()
   
-  print("Health Status Server starting...")
+  # start server
+  print("Grocery Server starting...")
 
   try:
-  
-    # Create a server handle
+    # create a server handle
     server = grpc.server (futures.ThreadPoolExecutor (max_workers=10))
 
-    # Now create our message handler object
+    # now create our message handler object
     handler = ServiceHandler ()
 
-    # Make the binding between the stub and the handler
+    # make the binding between the stub and the handler
     spb_grpc.add_DummyServiceServicer_to_server(handler, server)
 
     server.add_insecure_port("[::]:" + str (parsed_args.port))
 
     server.start()
 
-    print("Health Status Server started, listening on {}".format (parsed_args.port))
+    print("Grocery Server listening on {}".format (parsed_args.port))
     server.wait_for_termination()
 
   except:

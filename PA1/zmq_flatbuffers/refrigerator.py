@@ -165,8 +165,8 @@ def main ():
             msg.contents.icemaker = 9
 
             # time how long it takes
-            start_time = time.time () * 1000 # multiply by 1000 to get ms
             print("Sending message to health status server.")
+            start_time = time.time () * 1000 # multiply by 1000 to get ms
             refrigerator.send_message(refrigerator.health_status_socket, msg)
             msg = refrigerator.receive_message(refrigerator.health_status_socket)
             end_time = time.time () * 1000
@@ -241,8 +241,8 @@ def main ():
             msg.contents = ordercontents
             
             # time how long it takes
-            start_time = time.time () * 1000 # multiply by 1000 to get ms
             print("Sending message to grocery server.")
+            start_time = time.time () * 1000 # multiply by 1000 to get ms
             refrigerator.send_message(refrigerator.grocery_socket, msg)
             msg = refrigerator.receive_message(refrigerator.grocery_socket)
             end_time = time.time () * 1000

@@ -6,17 +6,7 @@ import schema_pb2 as schema__pb2
 
 
 class DummyServiceStub(object):
-    """Note that in your assignment, since you will have at least two separate types of 
-    There is no "top level" root structure as in FlatBufs. We decide what is top for us
-
-    Protocol Buffers also allow the facility to define services so as to support
-    remote procedure calls. This did not exist in FlatBufs, but we declare one
-    here as gRPC is a remote procedure call approach where the service must
-    provide an interface declaring what is accepted as a request and what goes
-    back as a response for that request. A response can comprise empty field if
-    nothing is expected as a response.
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -26,23 +16,13 @@ class DummyServiceStub(object):
         """
         self.method = channel.unary_unary(
                 '/DummyService/method',
-                request_serializer=schema__pb2.Request.SerializeToString,
-                response_deserializer=schema__pb2.Response.FromString,
+                request_serializer=schema__pb2.Message.SerializeToString,
+                response_deserializer=schema__pb2.Message.FromString,
                 )
 
 
 class DummyServiceServicer(object):
-    """Note that in your assignment, since you will have at least two separate types of 
-    There is no "top level" root structure as in FlatBufs. We decide what is top for us
-
-    Protocol Buffers also allow the facility to define services so as to support
-    remote procedure calls. This did not exist in FlatBufs, but we declare one
-    here as gRPC is a remote procedure call approach where the service must
-    provide an interface declaring what is accepted as a request and what goes
-    back as a response for that request. A response can comprise empty field if
-    nothing is expected as a response.
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def method(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -55,8 +35,8 @@ def add_DummyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'method': grpc.unary_unary_rpc_method_handler(
                     servicer.method,
-                    request_deserializer=schema__pb2.Request.FromString,
-                    response_serializer=schema__pb2.Response.SerializeToString,
+                    request_deserializer=schema__pb2.Message.FromString,
+                    response_serializer=schema__pb2.Message.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -66,17 +46,7 @@ def add_DummyServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class DummyService(object):
-    """Note that in your assignment, since you will have at least two separate types of 
-    There is no "top level" root structure as in FlatBufs. We decide what is top for us
-
-    Protocol Buffers also allow the facility to define services so as to support
-    remote procedure calls. This did not exist in FlatBufs, but we declare one
-    here as gRPC is a remote procedure call approach where the service must
-    provide an interface declaring what is accepted as a request and what goes
-    back as a response for that request. A response can comprise empty field if
-    nothing is expected as a response.
-
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def method(request,
@@ -90,7 +60,7 @@ class DummyService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/DummyService/method',
-            schema__pb2.Request.SerializeToString,
-            schema__pb2.Response.FromString,
+            schema__pb2.Message.SerializeToString,
+            schema__pb2.Message.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
