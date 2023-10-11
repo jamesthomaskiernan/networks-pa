@@ -142,7 +142,7 @@ def main ():
     # use this to keep track of time to send/receive messages
     roundtrip_times_zmpq = []
 
-    # send some arbitrary number of messages
+    # send some arbitrary number of messagesii
     for i in range(0, parsed_args.iters):
 
         # find random num, if it's 1, we send health message, else grocery message
