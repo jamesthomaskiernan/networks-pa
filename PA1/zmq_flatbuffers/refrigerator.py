@@ -113,9 +113,9 @@ def parseCmdLineArgs ():
     parser = argparse.ArgumentParser ()
 
     # add optional arguments
-    parser.add_argument ("-a", "--addr", default="127.0.0.1", help="IP Address to connect to (default: localhost i.e., 127.0.0.1)")
+    parser.add_argument ("-a", "--addrs", nargs=2, default=["127.0.0.1", "127.0.0.1"], help="IP Addresses to connect to (default: localhost i.e., 127.0.0.1 for both servers)")
     parser.add_argument ("-i", "--iters", type=int, default=10, help="Number of iterations (default: 10")
-    parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[5555, 4444], help="Ports that client is listening on (default: [5555, 4444])")
+    parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[4444, 5555], help="Ports that client is listening on (default: [4444, 5555])")
     args = parser.parse_args ()
 
     return args
@@ -134,15 +134,15 @@ def main ():
     refrigerator = Refrigerator()
 
     # connect refrigerator to both servers
-    refrigerator.connect(refrigerator.grocery_socket, parsed_args.ports[0], parsed_args.addr)
-    print("Refrigerator connected to grocery server.")
-    refrigerator.connect(refrigerator.health_status_socket, parsed_args.ports[1], parsed_args.addr)
+    refrigerator.connect(refrigerator.health_status_socket, parsed_args.ports[0], parsed_args.addrs[0])
     print("Refrigerator connected to health status server.")
+    refrigerator.connect(refrigerator.grocery_socket, parsed_args.ports[1], parsed_args.addrs[1])
+    print("Refrigerator connected to grocery server.")
 
     # use this to keep track of time to send/receive messages
     roundtrip_times_zmpq = []
 
-    # send some arbitrary number of messagesii
+    # send some arbitrary number of messages
     for i in range(0, parsed_args.iters):
 
         # find random num, if it's 1, we send health message, else grocery message
@@ -247,6 +247,9 @@ def main ():
             msg = refrigerator.receive_message(refrigerator.grocery_socket)
             end_time = time.time () * 1000
             roundtrip_times_zmpq.append(end_time - start_time)
+
+    # uncomment to view times:
+    # print(roundtrip_times_zmpq)
 
     avg = sum(roundtrip_times_zmpq) / len(roundtrip_times_zmpq)
     print("Average roundtrip time to both servers with ZMQ: " + str(avg) + "ms")

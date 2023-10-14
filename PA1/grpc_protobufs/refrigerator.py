@@ -17,7 +17,8 @@ def parseCmdLineArgs ():
 
   # add optional arguments
   parser.add_argument ("-i", "--iters", type=int, default=10, help="Number of iterations to run (default: 10)")
-  parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[5555, 4444], help="Ports that client is listening on (default: [5555, 4444])")
+  parser.add_argument ("-p", "--ports", type=int, nargs=2, default=[4444, 5555], help="Ports that client is listening on (default: [4444, 5555])")
+  parser.add_argument ("-a", "--addrs", nargs=2, default=["127.0.0.1", "127.0.0.1"], help="IP Addresses to connect to (default: localhost i.e., 127.0.0.1 for both servers)")
 
   # parse the args
   args = parser.parse_args ()
@@ -39,8 +40,8 @@ def main ():
   try:
 
     # use the insecure channel to establish connection with server
-    grocerychannel = grpc.insecure_channel ("localhost:" + str (parsed_args.ports[0]))
-    healthchannel = grpc.insecure_channel ("localhost:" + str (parsed_args.ports[1]))
+    healthchannel = grpc.insecure_channel (parsed_args.addrs[0] + ":" + str (parsed_args.ports[0]))
+    grocerychannel = grpc.insecure_channel (parsed_args.addrs[1] + ":" + str (parsed_args.ports[1]))
 
     # obtain a proxy object to the server
     grocerystub = spb_grpc.DummyServiceStub (grocerychannel)
@@ -159,14 +160,16 @@ def main ():
         req.order_contents.CopyFrom(ordercontents)
         
         # send request and print response
-        print("Sending message to grocery server.")
+        # print("Sending message to grocery server.")
         start_time = time.time () * 1000 # multiply by 1000 to get ms
         resp = grocerystub.method (req)
         end_time = time.time () * 1000
         roundtrip_times_grpc.append(end_time - start_time)
         
         # print response if you want
-        print(resp)
+        # print(resp)
+
+    print(roundtrip_times_grpc)
 
     # once done sending message, print out time stats
     avg = sum(roundtrip_times_grpc) / len(roundtrip_times_grpc)

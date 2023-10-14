@@ -5,7 +5,7 @@
 3. If the flatbuffer data for python are not already generated and inside the `PA` directory, run `flatc -p schema.fbs` to generate them.
 4. Start the grocery server with `python3 grocery_server.py`. You may specify interface with `-i` (default *), and port with `-p` (default 4444 for Grocery Server)
 5. Start the health server with `python3 health_status_server.py`. You may specify interface with `-i` (default *), and port with `-p` (default 5555 for Health Status Server)
-6. Start the fridge client with `python3 refrigerator.py`. You may specify address with `-a` (default `127.0.0.1`), ports to connect to with with `-p` (defaults are 5555 and 4444), and number of iterations to run with `-i` (default 10).
+6. Start the fridge client with `python3 refrigerator.py`. You may specify addresses refrigerator connects to with `-a` (default for both is `127.0.0.1`), ports to connect to with with `-p` (defaults are 4444 and 5555), and number of iterations to run with `-i` (default 10).
 
 ## How to run with GRPC + Protobufs
 
@@ -13,7 +13,7 @@
 3. If the protobuf data for python are not already generated, then generate them with `python3 -m grpc_tools.protoc --proto_path=./ --python_out=./ --grpc_python_out=./ --pyi_out=./   schema.proto` command.
 4. Start the grocery server with `python3 grocery_server.py`. You may specify interface with `-i` (default *), and port with `-p` (default 4444 for Grocery Server)
 5. Start the health server with `python3 health_status_server.py`. You may specify interface with `-i` (default *), and port with `-p` (default 5555 for Health Status Server)
-6. Start the fridge client with `python3 refrigerator.py`. You may specify ports to connect to with with `-p` (defaults are 5555 and 4444), and number of iterations to run with `-i` (default 10).
+6. Start the fridge client with `python3 refrigerator.py`. You may specify addresses refrigerator connects to with `-a` (default for both is `127.0.0.1`), ports to connect to with with `-p` (defaults are 4444 and 5555), and number of iterations to run with `-i` (default 10).
 
 ## Teamwork (who did what)
 
